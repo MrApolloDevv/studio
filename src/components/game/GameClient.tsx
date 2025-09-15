@@ -34,18 +34,17 @@ export default function GameClient() {
   const { toast } = useToast();
 
   const handleMove = (from: { row: number; col: number }, to: { row: number; col: number }) => {
-    const piece = board[from.row][from.col];
-
-    if (!piece || piece.color !== turn) {
-      return;
-    }
-    
     if (!isMoveValid(board, from, to)) {
       toast({
         variant: "destructive",
         title: "Movimento Inválido",
         description: "Esta jogada não é permitida.",
       });
+      return;
+    }
+
+    const piece = board[from.row][from.col];
+    if (!piece || piece.color !== turn) {
       return;
     }
 
@@ -136,48 +135,28 @@ export default function GameClient() {
         </div>
       </header>
       <main className="flex-grow p-4 md:p-6 lg:p-8">
-        <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr_280px] gap-6 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-6 max-w-7xl mx-auto">
           
-          <div className="hidden lg:flex flex-col gap-6">
+          <div className="flex flex-col gap-4">
             <PlayerProfile
               name="Oponente"
               elo={1250}
               avatarUrl="https://picsum.photos/seed/2/100/100"
               isTurn={turn === "b"}
+              size="small"
             />
-            <MoveHistory moves={moveHistory} />
-          </div>
-          
-          <div className="flex flex-col gap-4">
-             <div className="lg:hidden">
-              <PlayerProfile
-                name="Oponente"
-                elo={1250}
-                avatarUrl="https://picsum.photos/seed/2/100/100"
-                isTurn={turn === "b"}
-              />
-            </div>
             <Chessboard board={board} turn={turn} onMove={handleMove} lastMove={lastMove} />
-            <div className="lg:hidden">
-              <PlayerProfile
-                name="Você"
-                elo={1200}
-                avatarUrl="https://picsum.photos/seed/1/100/100"
-                isTurn={turn === "w"}
-              />
-            </div>
+            <PlayerProfile
+              name="Você"
+              elo={1200}
+              avatarUrl="https://picsum.photos/seed/1/100/100"
+              isTurn={turn === "w"}
+              size="small"
+            />
           </div>
           
           <div className="flex flex-col gap-6">
-            <div className="hidden lg:block">
-              <PlayerProfile
-                name="Você"
-                elo={1200}
-                avatarUrl="https://picsum.photos/seed/1/100/100"
-                isTurn={turn === "w"}
-              />
-            </div>
-            <div className="lg:hidden"><MoveHistory moves={moveHistory} /></div>
+            <MoveHistory moves={moveHistory} />
             <Chat />
           </div>
 
