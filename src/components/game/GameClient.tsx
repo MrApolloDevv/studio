@@ -1,0 +1,131 @@
+"use client";
+
+import { useState } from "react";
+import { Crown, User, Settings } from "lucide-react";
+import Chessboard from "./Chessboard";
+import PlayerProfile from "./PlayerProfile";
+import MoveHistory from "./MoveHistory";
+import Chat from "@/components/chat/Chat";
+import MoveSuggestion from "@/components/ai/MoveSuggestion";
+import { Button } from "@/components/ui/button";
+import {
+  initialBoard,
+  boardToFEN,
+  algebraicToCoords,
+  coordsToAlgebraic,
+  type Board,
+  type PlayerColor,
+  type Piece
+} from "@/lib/chess-logic";
+
+type Move = {
+  from: { row: number; col: number };
+  to: { row: number; col: number };
+};
+
+export default function GameClient() {
+  const [board, setBoard] = useState<Board>(initialBoard);
+  const [turn, setTurn] = useState<PlayerColor>("w");
+  const [moveHistory, setMoveHistory] = useState<string[]>([]);
+  const [lastMove, setLastMove] = useState<Move | null>(null);
+  const [fullMoveNumber, setFullMoveNumber] = useState(1);
+
+  const handleMove = (from: { row: number; col: number }, to: { row: number; col: number }) => {
+    const piece = board[from.row][from.col];
+
+    // Basic validation
+    if (!piece || piece.color !== turn) {
+      return;
+    }
+    if(from.row === to.row && from.col === to.col) {
+        return;
+    }
+
+    const newBoard = board.map(row => [...row]);
+    newBoard[to.row][to.col] = piece;
+    newBoard[from.row][from.col] = null;
+
+    const moveNotation = `${coordsToAlgebraic(from.row, from.col)}-${coordsToAlgebraic(to.row, to.col)}`;
+    
+    setBoard(newBoard);
+    setLastMove({from, to});
+    setMoveHistory(prev => [...prev, moveNotation]);
+    
+    const nextTurn = turn === "w" ? "b" : "w";
+    setTurn(nextTurn);
+
+    if (nextTurn === 'w') {
+      setFullMoveNumber(prev => prev + 1);
+    }
+  };
+
+  const fen = boardToFEN(board, turn, fullMoveNumber);
+
+  return (
+    <div className="bg-background min-h-screen flex flex-col">
+      <header className="flex items-center justify-between p-4 border-b bg-card">
+        <div className="flex items-center gap-2">
+          <Crown className="text-accent h-6 w-6" />
+          <h1 className="text-xl font-bold text-foreground">Realtime Chess Arena</h1>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="icon">
+            <User />
+          </Button>
+          <Button variant="ghost" size="icon">
+            <Settings />
+          </Button>
+        </div>
+      </header>
+      <main className="flex-grow p-4 md:p-6 lg:p-8">
+        <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr_280px] gap-6 max-w-7xl mx-auto">
+          
+          <div className="hidden lg:flex flex-col gap-6">
+            <PlayerProfile
+              name="Opponent"
+              elo={1250}
+              avatarUrl="https://picsum.photos/seed/2/100/100"
+              isTurn={turn === "b"}
+            />
+            <MoveHistory moves={moveHistory} />
+          </div>
+          
+          <div className="flex flex-col gap-4">
+             <div className="lg:hidden">
+              <PlayerProfile
+                name="Opponent"
+                elo={1250}
+                avatarUrl="https://picsum.photos/seed/2/100/100"
+                isTurn={turn === "b"}
+              />
+            </div>
+            <Chessboard board={board} turn={turn} onMove={handleMove} lastMove={lastMove} />
+            <div className="lg:hidden">
+              <PlayerProfile
+                name="You"
+                elo={1200}
+                avatarUrl="https://picsum.photos/seed/1/100/100"
+                isTurn={turn === "w"}
+              />
+            </div>
+          </div>
+          
+          <div className="flex flex-col gap-6">
+            <div className="hidden lg:block">
+              <PlayerProfile
+                name="You"
+                elo={1200}
+                avatarUrl="https://picsum.photos/seed/1/100/100"
+                isTurn={turn === "w"}
+              />
+            </div>
+            <MoveSuggestion fen={fen} />
+            <div className="lg:hidden"><MoveHistory moves={moveHistory} /></div>
+            <Chat />
+          </div>
+
+        </div>
+      </main>
+    </div>
+  );
+}
