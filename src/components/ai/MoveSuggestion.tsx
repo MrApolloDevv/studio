@@ -26,11 +26,11 @@ export default function MoveSuggestion({ fen }: MoveSuggestionProps) {
       });
       setSuggestion(result);
     } catch (error) {
-      console.error("Error getting move suggestion:", error);
+      console.error("Erro ao obter sugestão de jogada:", error);
       toast({
         variant: "destructive",
-        title: "AI Error",
-        description: "Could not fetch a move suggestion. Please try again.",
+        title: "Erro da IA",
+        description: "Não foi possível obter uma sugestão de jogada. Por favor, tente novamente.",
       });
     } finally {
       setIsLoading(false);
@@ -42,7 +42,7 @@ export default function MoveSuggestion({ fen }: MoveSuggestionProps) {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Lightbulb className="text-accent" />
-          AI Move Suggestion
+          Sugestão da IA
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -50,12 +50,12 @@ export default function MoveSuggestion({ fen }: MoveSuggestionProps) {
           {isLoading ? (
             <LoaderCircle className="animate-spin" />
           ) : (
-            "Get a Hint"
+            "Obter uma Dica"
           )}
         </Button>
         {suggestion && (
           <div className="space-y-2 rounded-lg border p-4">
-            <h3 className="font-semibold">Suggested Move: <span className="font-mono text-primary">{suggestion.move}</span></h3>
+            <h3 className="font-semibold">Jogada Sugerida: <span className="font-mono text-primary">{suggestion.move}</span></h3>
             <p className="text-sm text-muted-foreground">{suggestion.explanation}</p>
           </div>
         )}

@@ -66,7 +66,7 @@ export default function GameClient() {
       <header className="flex items-center justify-between p-4 border-b bg-card">
         <div className="flex items-center gap-2">
           <Crown className="text-accent h-6 w-6" />
-          <h1 className="text-xl font-bold text-foreground">Realtime Chess Arena</h1>
+          <h1 className="text-xl font-bold text-foreground">Arena de Xadrez em Tempo Real</h1>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon">
@@ -82,7 +82,7 @@ export default function GameClient() {
           
           <div className="hidden lg:flex flex-col gap-6">
             <PlayerProfile
-              name="Opponent"
+              name="Oponente"
               elo={1250}
               avatarUrl="https://picsum.photos/seed/2/100/100"
               isTurn={turn === "b"}
@@ -93,7 +93,7 @@ export default function GameClient() {
           <div className="flex flex-col gap-4">
              <div className="lg:hidden">
               <PlayerProfile
-                name="Opponent"
+                name="Oponente"
                 elo={1250}
                 avatarUrl="https://picsum.photos/seed/2/100/100"
                 isTurn={turn === "b"}
@@ -102,7 +102,7 @@ export default function GameClient() {
             <Chessboard board={board} turn={turn} onMove={handleMove} lastMove={lastMove} />
             <div className="lg:hidden">
               <PlayerProfile
-                name="You"
+                name="Você"
                 elo={1200}
                 avatarUrl="https://picsum.photos/seed/1/100/100"
                 isTurn={turn === "w"}
@@ -113,7 +113,7 @@ export default function GameClient() {
           <div className="flex flex-col gap-6">
             <div className="hidden lg:block">
               <PlayerProfile
-                name="You"
+                name="Você"
                 elo={1200}
                 avatarUrl="https://picsum.photos/seed/1/100/100"
                 isTurn={turn === "w"}

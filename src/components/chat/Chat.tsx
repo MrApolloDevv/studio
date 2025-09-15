@@ -9,19 +9,19 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 interface Message {
-  sender: "You" | "Opponent";
+  sender: "Você" | "Oponente";
   text: string;
 }
 
 export default function Chat() {
   const [messages, setMessages] = useState<Message[]>([
-    { sender: "Opponent", text: "Good luck, have fun!" },
+    { sender: "Oponente", text: "Boa sorte, divirta-se!" },
   ]);
   const [input, setInput] = useState("");
 
   const handleSend = () => {
     if (input.trim()) {
-      setMessages([...messages, { sender: "You", text: input.trim() }]);
+      setMessages([...messages, { sender: "Você", text: input.trim() }]);
       setInput("");
     }
   };
@@ -38,7 +38,7 @@ export default function Chat() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <MessageSquare />
-          Game Chat
+          Chat do Jogo
         </CardTitle>
       </CardHeader>
       <CardContent className="flex-grow flex flex-col gap-4">
@@ -48,26 +48,26 @@ export default function Chat() {
               <div
                 key={index}
                 className={`flex items-start gap-2 ${
-                  msg.sender === "You" ? "justify-end" : ""
+                  msg.sender === "Você" ? "justify-end" : ""
                 }`}
               >
-                {msg.sender === "Opponent" && (
+                {msg.sender === "Oponente" && (
                   <Avatar className="h-8 w-8">
                     <AvatarFallback>O</AvatarFallback>
                   </Avatar>
                 )}
                 <div
                   className={`rounded-lg px-3 py-2 text-sm max-w-xs ${
-                    msg.sender === "You"
+                    msg.sender === "Você"
                       ? "bg-primary text-primary-foreground"
                       : "bg-muted"
                   }`}
                 >
                   {msg.text}
                 </div>
-                {msg.sender === "You" && (
+                {msg.sender === "Você" && (
                   <Avatar className="h-8 w-8">
-                    <AvatarFallback>Y</AvatarFallback>
+                    <AvatarFallback>V</AvatarFallback>
                   </Avatar>
                 )}
               </div>
@@ -79,7 +79,7 @@ export default function Chat() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={(e) => e.key === "Enter" && handleSend()}
-            placeholder="Type a message..."
+            placeholder="Digite uma mensagem..."
           />
           <Button onClick={handleSend} size="icon">
             <Send className="h-4 w-4" />

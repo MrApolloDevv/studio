@@ -38,16 +38,16 @@ const prompt = ai.definePrompt({
   name: 'suggestMovePrompt',
   input: {schema: SuggestMoveInputSchema},
   output: {schema: SuggestMoveOutputSchema},
-  prompt: `You are a grandmaster chess player. You will suggest the best move for the current player, given the board state.
+  prompt: `Você é um grande mestre de xadrez. Você irá sugerir a melhor jogada para o jogador atual, dado o estado do tabuleiro.
 
-Board State (FEN): {{{boardState}}}
-Difficulty: {{{difficulty}}}
+Estado do Tabuleiro (FEN): {{{boardState}}}
+Dificuldade: {{{difficulty}}}
 
-Respond with the suggested move in standard algebraic notation, and explain why it is a good move.  Explain your reasoning step by step.
+Responda com a jogada sugerida em notação algébrica padrão e explique por que é uma boa jogada. Explique seu raciocínio passo a passo.
 
-Follow this format:
-Move: <move>
-Explanation: <explanation>`,
+Siga este formato:
+Jogada: <jogada>
+Explicação: <explicação>`,
 });
 
 const suggestMoveFlow = ai.defineFlow(

@@ -30,7 +30,7 @@ const prompt = ai.definePrompt({
   name: 'explainMovePrompt',
   input: {schema: ExplainMoveInputSchema},
   output: {schema: ExplainMoveOutputSchema},
-  prompt: `You are a grandmaster chess player. Explain in detail the reasoning behind the move "{{{suggestedMove}}}" given the board state "{{{boardState}}}". Focus on the tactical and strategic advantages gained, potential threats avoided, and the overall impact on the game. Keep it concise and accurate for novice chess players.
+  prompt: `Você é um grande mestre de xadrez. Explique em detalhes o raciocínio por trás da jogada "{{{suggestedMove}}}" dado o estado do tabuleiro "{{{boardState}}}". Foque nas vantagens táticas e estratégicas obtidas, ameaças potenciais evitadas e o impacto geral no jogo. Mantenha a explicação concisa e precisa para jogadores de xadrez novatos.
 `,
 });
 

@@ -31,7 +31,7 @@ export default function PlayerProfile({ name, elo, avatarUrl, isTurn }: PlayerPr
         {isTurn && (
           <div className="flex items-center gap-2 text-accent animate-pulse">
             <Clock className="h-5 w-5" />
-            <span className="font-semibold">Thinking...</span>
+            <span className="font-semibold">Pensando...</span>
           </div>
         )}
       </CardContent>

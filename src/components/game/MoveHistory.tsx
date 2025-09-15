@@ -14,7 +14,7 @@ export default function MoveHistory({ moves }: MoveHistoryProps) {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <History />
-          Move History
+          Histórico de Jogadas
         </CardTitle>
       </CardHeader>
       <CardContent>
