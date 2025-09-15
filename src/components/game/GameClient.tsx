@@ -49,7 +49,7 @@ export default function GameClient() {
     newBoard[to.row][to.col] = piece;
     newBoard[from.row][from.col] = null;
 
-    const moveNotation = `${coordsToAlgebraic(from.row, from.col)}-${coordsToAlgebraic(to.row, to.col)}`;
+    const moveNotation = coordsToAlgebraic(to.row, to.col);
     
     setBoard(newBoard);
     setLastMove({from, to});
@@ -83,7 +83,7 @@ export default function GameClient() {
                 newBoard[to.row][to.col] = piece;
                 newBoard[from.row][from.col] = null;
 
-                const moveNotation = `${coordsToAlgebraic(from.row, from.col)}-${coordsToAlgebraic(to.row, to.col)}`;
+                const moveNotation = coordsToAlgebraic(to.row, to.col);
                 
                 setBoard(newBoard);
                 setLastMove({from, to});
