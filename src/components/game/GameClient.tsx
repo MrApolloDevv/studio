@@ -80,8 +80,10 @@ export default function GameClient() {
 
         const result = await response.json();
 
-        if (result && result.bestMove && result.bestMove.includes('-')) {
-          const [fromAlg, toAlg] = result.bestMove.split('-');
+        // Correção: Agora processamos a jogada em notação UCI
+        if (result && result.bestMove && result.bestMove.length >= 4 && result.bestMove !== 'info') {
+          const fromAlg = result.bestMove.substring(0, 2);
+          const toAlg = result.bestMove.substring(2, 4);
           const from = algebraicToCoords(fromAlg);
           const to = algebraicToCoords(toAlg);
           
@@ -105,13 +107,13 @@ export default function GameClient() {
                   setFullMoveNumber(prev => prev + 1);
                 }
               } else {
-                 console.error("Jogada da IA inválida (peça errada), tentando novamente:", result.bestMove);
-                 makeOpponentMove();
-              }
+                  console.error("Jogada da IA inválida (peça errada), tentando novamente:", result.bestMove);
+                  makeOpponentMove();
+                }
           } else {
-             console.error("Jogada da IA inválida recebida, tentando novamente:", result.bestMove);
-             makeOpponentMove();
-          }
+              console.error("Jogada da IA inválida recebida, tentando novamente:", result.bestMove);
+              makeOpponentMove();
+            }
         } else {
             console.error("Jogada da IA inválida recebida:", result.bestMove);
             toast({
@@ -141,7 +143,7 @@ export default function GameClient() {
   }, [turn, board, fullMoveNumber, toast]);
 
   return (
-    <div className="bg-background h-screen flex flex-col dark">
+    <div className="bg-background min-h-screen flex flex-col dark">
       <header className="flex items-center justify-between p-2 border-b bg-card flex-shrink-0">
         <div className="flex items-center gap-2">
           <Crown className="text-accent h-6 w-6" />
@@ -156,11 +158,11 @@ export default function GameClient() {
           </Button>
         </div>
       </header>
-      <main className="flex-grow p-4 overflow-hidden">
-        <div className="grid grid-cols-[1fr_minmax(280px,320px)] gap-4 h-full">
+      <main className="flex-grow p-2 md:p-4 overflow-hidden">
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_minmax(280px,320px)] gap-4 h-full">
           
           <div className="flex flex-col items-center justify-center">
-             <Chessboard board={board} turn={turn} onMove={handleMove} lastMove={lastMove} />
+              <Chessboard board={board} turn={turn} onMove={handleMove} lastMove={lastMove} />
           </div>
           
           <div className="flex flex-col gap-4 overflow-hidden">

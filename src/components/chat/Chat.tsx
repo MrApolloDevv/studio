@@ -33,12 +33,12 @@ export default function Chat() {
   }, [messages]);
 
   return (
-    <div className="flex flex-col h-full gap-2 bg-card border rounded-lg p-2">
+    <div className="flex flex-col h-full md:h-auto md:min-h-[200px] gap-2 bg-card border rounded-lg p-2">
       <h3 className="flex items-center gap-2 font-semibold text-md px-2">
         <MessageSquare className="h-5 w-5" />
         Bate-papo com o Oponente
       </h3>
-      <ScrollArea className="flex-grow pr-2">
+      <ScrollArea className="flex-grow pr-2 h-48 md:h-auto">
           <div className="space-y-3 p-2" ref={scrollViewportRef}>
             {messages.map((msg, index) => (
               <div

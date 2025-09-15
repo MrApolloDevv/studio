@@ -18,7 +18,7 @@ export default function MoveHistory({ moves }: MoveHistoryProps) {
         </CardTitle>
       </CardHeader>
       <CardContent className="flex-grow overflow-hidden">
-        <ScrollArea className="h-full w-full pr-4">
+        <ScrollArea className="h-40 md:h-full w-full pr-4">
           <ol className="grid grid-cols-[auto_1fr_1fr] gap-x-4 gap-y-1 text-sm">
             {Array.from({ length: Math.ceil(moves.length / 2) }).map((_, i) => (
               <li key={i} className="contents">
