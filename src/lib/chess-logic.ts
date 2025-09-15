@@ -23,11 +23,11 @@ export const initialBoard: Board = [
 export function isMoveValid(board: Board, from: { row: number; col: number }, to: { row: number; col: number }): boolean {
   const piece = board[from.row][from.col];
   const targetPiece = board[to.row][to.col];
-  const turn = piece?.color;
 
   if (!piece) return false;
-  if (targetPiece && targetPiece.color === turn) return false; // Cannot capture same color piece
+  if (targetPiece && targetPiece.color === piece.color) return false;
 
+  const turn = piece.color;
   const dRow = to.row - from.row;
   const dCol = to.col - from.col;
 
