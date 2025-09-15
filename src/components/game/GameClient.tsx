@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Crown, User, Settings } from "lucide-react";
 import Chessboard from "./Chessboard";
 import PlayerProfile from "./PlayerProfile";
@@ -8,6 +8,8 @@ import MoveHistory from "./MoveHistory";
 import Chat from "@/components/chat/Chat";
 import MoveSuggestion from "@/components/ai/MoveSuggestion";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import { suggestMove } from "@/ai/flows/suggest-move";
 import {
   initialBoard,
   boardToFEN,
@@ -29,6 +31,7 @@ export default function GameClient() {
   const [moveHistory, setMoveHistory] = useState<string[]>([]);
   const [lastMove, setLastMove] = useState<Move | null>(null);
   const [fullMoveNumber, setFullMoveNumber] = useState(1);
+  const { toast } = useToast();
 
   const handleMove = (from: { row: number; col: number }, to: { row: number; col: number }) => {
     const piece = board[from.row][from.col];
@@ -58,6 +61,41 @@ export default function GameClient() {
       setFullMoveNumber(prev => prev + 1);
     }
   };
+
+  useEffect(() => {
+    const makeOpponentMove = async () => {
+      try {
+        const result = await suggestMove({
+          boardState: boardToFEN(board, turn, fullMoveNumber),
+          difficulty: "medium", // A dificuldade do oponente pode ser ajustada aqui
+        });
+        
+        const [fromAlg, toAlg] = result.move.split('-');
+        const from = algebraicToCoords(fromAlg);
+        const to = algebraicToCoords(toAlg);
+        
+        handleMove(from, to);
+
+      } catch (error) {
+        console.error("Erro ao obter a jogada do oponente:", error);
+        toast({
+          variant: "destructive",
+          title: "Erro da IA do Oponente",
+          description: "Não foi possível obter a jogada do oponente. Por favor, tente novamente.",
+        });
+        // Reverter o turno se a IA falhar
+        setTurn('w');
+      }
+    };
+
+    if (turn === 'b') {
+      // Atraso para simular o tempo de raciocínio do oponente
+      const timer = setTimeout(() => {
+        makeOpponentMove();
+      }, 1000); 
+      return () => clearTimeout(timer);
+    }
+  }, [turn, board, fullMoveNumber]);
 
   const fen = boardToFEN(board, turn, fullMoveNumber);
 
