@@ -38,6 +38,14 @@ const prompt = ai.definePrompt({
   name: 'suggestMovePrompt',
   input: {schema: SuggestMoveInputSchema},
   output: {schema: SuggestMoveOutputSchema},
+  config: {
+    safetySettings: [
+      {
+        category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
+        threshold: 'BLOCK_NONE',
+      },
+    ],
+  },
   prompt: `Você é um grande mestre de xadrez. Você irá sugerir a melhor jogada para o jogador atual, dado o estado do tabuleiro.
 
 Estado do Tabuleiro (FEN): {{{boardState}}}
