@@ -145,13 +145,13 @@ export default function GameClient() {
       <main className="flex-grow p-4 overflow-hidden">
         <div className="grid grid-cols-[1fr_minmax(280px,320px)] gap-4 h-full">
           
-          <div className="flex flex-col justify-center">
+          <div className="flex flex-col items-center justify-center">
              <Chessboard board={board} turn={turn} onMove={handleMove} lastMove={lastMove} />
           </div>
           
           <div className="flex flex-col gap-4 overflow-hidden">
             <Card>
-                <CardContent className="flex items-center justify-center p-4 gap-2">
+                <CardContent className="flex items-center justify-center p-4 gap-4">
                     <div className="flex flex-col items-center gap-2">
                         <Avatar>
                             <AvatarImage src="https://picsum.photos/seed/2/100/100" data-ai-hint="person face" />
