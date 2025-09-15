@@ -114,7 +114,12 @@ export default function GameClient() {
           }
         } else {
             console.error("Jogada da IA inválida recebida:", result.bestMove);
-            makeOpponentMove();
+            toast({
+              variant: "destructive",
+              title: "Erro da IA do Oponente",
+              description: "A IA retornou uma jogada inválida. Por favor, tente novamente.",
+            });
+            setTurn('w'); // Devolve o turno ao jogador para evitar loop
         }
       } catch (error) {
         console.error("Erro ao obter a jogada do oponente:", error);
