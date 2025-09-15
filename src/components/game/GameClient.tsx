@@ -6,7 +6,6 @@ import Chessboard from "./Chessboard";
 import PlayerProfile from "./PlayerProfile";
 import MoveHistory from "./MoveHistory";
 import Chat from "@/components/chat/Chat";
-import MoveSuggestion from "@/components/ai/MoveSuggestion";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { suggestMove } from "@/ai/flows/suggest-move";
@@ -178,7 +177,6 @@ export default function GameClient() {
                 isTurn={turn === "w"}
               />
             </div>
-            <MoveSuggestion fen={fen} />
             <div className="lg:hidden"><MoveHistory moves={moveHistory} /></div>
             <Chat />
           </div>
