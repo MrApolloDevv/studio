@@ -59,7 +59,7 @@ export default function Chessboard({ board, turn, onMove, lastMove }: Chessboard
   const ranks = ['8', '7', '6', '5', '4', '3', '2', '1'];
 
   return (
-    <div className="relative aspect-square max-w-[calc(100vh-12rem)] mx-auto shadow-2xl rounded-lg overflow-hidden">
+    <div className="relative aspect-square w-full max-w-[calc(100vh-10rem)] mx-auto shadow-2xl rounded-lg overflow-hidden">
       <div className="grid grid-cols-8 grid-rows-8 h-full">
         {board.map((row, rowIndex) =>
           row.map((piece, colIndex) => {

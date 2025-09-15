@@ -4,7 +4,7 @@ import { type PieceSymbol, type PlayerColor } from "@/lib/chess-logic";
 
 const pieceColorClass = {
   w: "fill-white stroke-black",
-  b: "fill-black stroke-white",
+  b: "fill-green-800 stroke-green-100",
 };
 
 const King = ({ color }: { color: PlayerColor }) => (
