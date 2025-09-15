@@ -30,17 +30,15 @@ export default function GameClient() {
   const [turn, setTurn] = useState<PlayerColor>("w");
   const [moveHistory, setMoveHistory] = useState<string[]>([]);
   const [lastMove, setLastMove] = useState<Move | null>(null);
+  const [invalidMoveFrom, setInvalidMoveFrom] = useState<{ row: number; col: number } | null>(null);
   const [fullMoveNumber, setFullMoveNumber] = useState(1);
   const { toast } = useToast();
 
   const handleMove = (from: { row: number; col: number }, to: { row: number; col: number }) => {
     const piece = board[from.row][from.col];
     if (turn !== 'w' || !piece || piece.color !== 'w' || !isMoveValid(board, from, to)) {
-      toast({
-        variant: "destructive",
-        title: "Movimento Inválido",
-        description: "Esta jogada não é permitida.",
-      });
+      setInvalidMoveFrom(from);
+      setTimeout(() => setInvalidMoveFrom(null), 300);
       return;
     }
 
@@ -80,7 +78,6 @@ export default function GameClient() {
 
         const result = await response.json();
 
-        // Correção: Agora processamos a jogada em notação UCI
         if (result && result.bestMove && result.bestMove.length >= 4 && result.bestMove !== 'info') {
           const fromAlg = result.bestMove.substring(0, 2);
           const toAlg = result.bestMove.substring(2, 4);
@@ -121,7 +118,7 @@ export default function GameClient() {
               title: "Erro da IA do Oponente",
               description: "A IA retornou uma jogada inválida. Por favor, tente novamente.",
             });
-            setTurn('w'); // Devolve o turno ao jogador para evitar loop
+            setTurn('w'); 
         }
       } catch (error) {
         console.error("Erro ao obter a jogada do oponente:", error);
@@ -158,11 +155,11 @@ export default function GameClient() {
           </Button>
         </div>
       </header>
-      <main className="flex-grow p-2 md:p-4 overflow-hidden">
+      <main className="flex-grow p-2 md:p-4 overflow-auto">
         <div className="grid grid-cols-1 md:grid-cols-[1fr_minmax(280px,320px)] gap-4 h-full">
           
           <div className="flex flex-col items-center justify-center">
-              <Chessboard board={board} turn={turn} onMove={handleMove} lastMove={lastMove} />
+              <Chessboard board={board} turn={turn} onMove={handleMove} lastMove={lastMove} invalidMoveFrom={invalidMoveFrom} />
           </div>
           
           <div className="flex flex-col gap-4 overflow-hidden">

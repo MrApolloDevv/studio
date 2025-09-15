@@ -15,9 +15,10 @@ interface ChessboardProps {
   turn: PlayerColor;
   lastMove: Move | null;
   onMove: (from: { row: number; col: number }, to: { row: number; col: number }) => void;
+  invalidMoveFrom: { row: number; col: number } | null;
 }
 
-export default function Chessboard({ board, turn, onMove, lastMove }: ChessboardProps) {
+export default function Chessboard({ board, turn, onMove, lastMove, invalidMoveFrom }: ChessboardProps) {
   const [draggedPiece, setDraggedPiece] = useState<{ row: number; col: number; piece: Piece } | null>(null);
   const [selectedSquare, setSelectedSquare] = useState<{ row: number; col: number } | null>(null);
   
@@ -67,6 +68,7 @@ export default function Chessboard({ board, turn, onMove, lastMove }: Chessboard
             const isLastMoveFrom = lastMove?.from.row === rowIndex && lastMove?.from.col === colIndex;
             const isLastMoveTo = lastMove?.to.row === rowIndex && lastMove?.to.col === colIndex;
             const isSelected = selectedSquare?.row === rowIndex && selectedSquare?.col === colIndex;
+            const isInvalidMove = invalidMoveFrom?.row === rowIndex && invalidMoveFrom?.col === colIndex;
 
             return (
               <div
@@ -75,7 +77,8 @@ export default function Chessboard({ board, turn, onMove, lastMove }: Chessboard
                   "relative flex items-center justify-center aspect-square",
                   isLight ? "bg-stone-300" : "bg-emerald-800",
                   (isLastMoveFrom || isLastMoveTo) && "bg-accent/70",
-                  isSelected && "bg-accent/90"
+                  isSelected && "bg-accent/90",
+                  isInvalidMove && "ring-2 ring-inset ring-destructive"
                 )}
                 onDragOver={handleDragOver}
                 onDrop={() => handleDrop(rowIndex, colIndex)}
