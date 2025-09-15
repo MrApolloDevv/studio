@@ -59,7 +59,7 @@ export default function Chessboard({ board, turn, onMove, lastMove }: Chessboard
   const ranks = ['8', '7', '6', '5', '4', '3', '2', '1'];
 
   return (
-    <div className="relative aspect-square w-full max-w-[calc(100vh-10rem)] mx-auto shadow-2xl rounded-lg overflow-hidden">
+    <div className="relative aspect-square w-full max-w-[calc(100vh-8rem)] mx-auto shadow-2xl rounded-lg overflow-hidden">
       <div className="grid grid-cols-8 grid-rows-8 h-full">
         {board.map((row, rowIndex) =>
           row.map((piece, colIndex) => {
@@ -73,7 +73,7 @@ export default function Chessboard({ board, turn, onMove, lastMove }: Chessboard
                 key={`${rowIndex}-${colIndex}`}
                 className={cn(
                   "relative flex items-center justify-center aspect-square",
-                  isLight ? "bg-stone-300" : "bg-emerald-700",
+                  isLight ? "bg-stone-300" : "bg-emerald-800",
                   (isLastMoveFrom || isLastMoveTo) && "bg-accent/70",
                   isSelected && "bg-accent/90"
                 )}
@@ -92,10 +92,10 @@ export default function Chessboard({ board, turn, onMove, lastMove }: Chessboard
                   </div>
                 )}
                 {colIndex === 0 && (
-                  <span className={cn("absolute left-1 top-0 text-xs font-bold", isLight ? "text-emerald-700" : "text-stone-300")}>{ranks[rowIndex]}</span>
+                  <span className={cn("absolute left-1 top-0 text-xs font-bold", isLight ? "text-black" : "text-stone-300")}>{ranks[rowIndex]}</span>
                 )}
                 {rowIndex === 7 && (
-                  <span className={cn("absolute right-1 bottom-0 text-xs font-bold", isLight ? "text-emerald-700" : "text-stone-300")}>{files[colIndex]}</span>
+                  <span className={cn("absolute right-1 bottom-0 text-xs font-bold", isLight ? "text-black" : "text-stone-300")}>{files[colIndex]}</span>
                 )}
               </div>
             );
