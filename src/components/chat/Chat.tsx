@@ -17,7 +17,7 @@ export default function Chat() {
     { sender: "Oponente", text: "Boa sorte, divirta-se!" },
   ]);
   const [input, setInput] = useState("");
-  const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const scrollViewportRef = useRef<HTMLDivElement>(null);
 
   const handleSend = () => {
     if (input.trim()) {
@@ -27,8 +27,8 @@ export default function Chat() {
   };
 
   useEffect(() => {
-    if (scrollAreaRef.current) {
-      scrollAreaRef.current.scrollTo({ top: scrollAreaRef.current.scrollHeight, behavior: 'smooth' });
+    if (scrollViewportRef.current) {
+      scrollViewportRef.current.scrollTo({ top: scrollViewportRef.current.scrollHeight, behavior: 'smooth' });
     }
   }, [messages]);
 
@@ -38,8 +38,8 @@ export default function Chat() {
         <MessageSquare className="h-5 w-5" />
         Bate-papo com o Oponente
       </h3>
-      <ScrollArea className="flex-grow pr-2" viewportRef={scrollAreaRef}>
-          <div className="space-y-3 p-2">
+      <ScrollArea className="flex-grow pr-2">
+          <div className="space-y-3 p-2" ref={scrollViewportRef}>
             {messages.map((msg, index) => (
               <div
                 key={index}
