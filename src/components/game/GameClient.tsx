@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { Crown, User, Settings } from "lucide-react";
 import Chessboard from "./Chessboard";
-import PlayerProfile from "./PlayerProfile";
 import MoveHistory from "./MoveHistory";
 import Chat from "@/components/chat/Chat";
 import { Button } from "@/components/ui/button";
@@ -17,7 +16,10 @@ import {
   isMoveValid,
   type Board,
   type PlayerColor,
+  type Piece,
 } from "@/lib/chess-logic";
+import { Card, CardContent } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 type Move = {
   from: { row: number; col: number };
@@ -33,17 +35,13 @@ export default function GameClient() {
   const { toast } = useToast();
 
   const handleMove = (from: { row: number; col: number }, to: { row: number; col: number }) => {
-    if (turn !== 'w' || !isMoveValid(board, from, to)) {
+    const piece = board[from.row][from.col];
+    if (turn !== 'w' || !piece || piece.color !== 'w' || !isMoveValid(board, from, to)) {
       toast({
         variant: "destructive",
         title: "Movimento Inválido",
         description: "Esta jogada não é permitida.",
       });
-      return;
-    }
-
-    const piece = board[from.row][from.col];
-    if (!piece || piece.color !== turn) {
       return;
     }
 
@@ -129,7 +127,7 @@ export default function GameClient() {
   }, [turn, board, fullMoveNumber, toast]);
 
   return (
-    <div className="bg-background h-screen flex flex-col">
+    <div className="bg-background h-screen flex flex-col dark">
       <header className="flex items-center justify-between p-2 border-b bg-card flex-shrink-0">
         <div className="flex items-center gap-2">
           <Crown className="text-accent h-6 w-6" />
@@ -147,27 +145,30 @@ export default function GameClient() {
       <main className="flex-grow p-4 overflow-hidden">
         <div className="grid grid-cols-[1fr_minmax(280px,320px)] gap-4 h-full">
           
-          <div className="flex flex-col gap-2">
-            <PlayerProfile
-              name="Oponente"
-              elo={1250}
-              avatarUrl="https://picsum.photos/seed/2/100/100"
-              isTurn={turn === "b"}
-              size="small"
-            />
-            <div className="flex-grow flex items-center justify-center">
-              <Chessboard board={board} turn={turn} onMove={handleMove} lastMove={lastMove} />
-            </div>
-            <PlayerProfile
-              name="Você"
-              elo={1200}
-              avatarUrl="https://picsum.photos/seed/1/100/100"
-              isTurn={turn === "w"}
-              size="small"
-            />
+          <div className="flex flex-col justify-center">
+             <Chessboard board={board} turn={turn} onMove={handleMove} lastMove={lastMove} />
           </div>
           
           <div className="flex flex-col gap-4 overflow-hidden">
+            <Card>
+                <CardContent className="flex items-center justify-center p-4 gap-2">
+                    <div className="flex flex-col items-center gap-2">
+                        <Avatar>
+                            <AvatarImage src="https://picsum.photos/seed/2/100/100" data-ai-hint="person face" />
+                            <AvatarFallback>O</AvatarFallback>
+                        </Avatar>
+                        <span className="font-semibold">Oponente</span>
+                    </div>
+                    <span className="text-muted-foreground font-bold text-lg">vs</span>
+                    <div className="flex flex-col items-center gap-2">
+                        <Avatar>
+                            <AvatarImage src="https://picsum.photos/seed/1/100/100" data-ai-hint="person face" />
+                            <AvatarFallback>V</AvatarFallback>
+                        </Avatar>
+                        <span className="font-semibold">Você</span>
+                    </div>
+                </CardContent>
+            </Card>
             <MoveHistory moves={moveHistory} />
             <Chat />
           </div>
