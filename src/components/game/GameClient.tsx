@@ -66,7 +66,7 @@ export default function GameClient() {
     const makeOpponentMove = async () => {
       try {
         const fenString = boardToFEN(board, turn, fullMoveNumber);
-        const response = await fetch('https://us-central1-chess-backend-2b0605.cloudfunctions.net/app/api/bestmove', {
+        const response = await fetch('/api/bestmove', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

@@ -30,6 +30,14 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: '/api/bestmove',
+        destination: 'https://us-central1-chess-backend-2b0605.cloudfunctions.net/app/api/bestmove',
+      },
+    ]
+  },
 };
 
 export default nextConfig;
