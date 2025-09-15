@@ -69,13 +69,26 @@ export default function GameClient() {
           boardState: boardToFEN(board, turn, fullMoveNumber),
           difficulty: "medium", // A dificuldade do oponente pode ser ajustada aqui
         });
-        
-        const [fromAlg, toAlg] = result.move.split('-');
-        const from = algebraicToCoords(fromAlg);
-        const to = algebraicToCoords(toAlg);
-        
-        handleMove(from, to);
 
+        if (result && result.move && result.move.includes('-')) {
+          const [fromAlg, toAlg] = result.move.split('-');
+          if (fromAlg && toAlg) {
+            const from = algebraicToCoords(fromAlg);
+            const to = algebraicToCoords(toAlg);
+            
+            if (from && to) {
+              handleMove(from, to);
+            }
+          }
+        } else {
+            console.error("Jogada da IA inválida recebida:", result.move);
+            toast({
+              variant: "destructive",
+              title: "Erro da IA do Oponente",
+              description: "A IA retornou uma jogada inválida. Tente novamente.",
+            });
+            setTurn('w'); // Reverter o turno se a IA falhar de forma previsível
+        }
       } catch (error) {
         console.error("Erro ao obter a jogada do oponente:", error);
         toast({
