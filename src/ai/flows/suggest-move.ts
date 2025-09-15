@@ -23,7 +23,7 @@ const SuggestMoveInputSchema = z.object({
 export type SuggestMoveInput = z.infer<typeof SuggestMoveInputSchema>;
 
 const SuggestMoveOutputSchema = z.object({
-  move: z.string().describe('The suggested move in standard algebraic notation.'),
+  move: z.string().describe('The suggested move in "from-to" standard algebraic notation (e.g., "e2-e4").'),
   explanation: z
     .string()
     .describe('An explanation of why the move is a good suggestion.'),
@@ -43,10 +43,10 @@ const prompt = ai.definePrompt({
 Estado do Tabuleiro (FEN): {{{boardState}}}
 Dificuldade: {{{difficulty}}}
 
-Responda com a jogada sugerida em notação algébrica padrão e explique por que é uma boa jogada. Explique seu raciocínio passo a passo.
+Responda com a jogada sugerida em notação algébrica "origem-destino" (por exemplo, "e2-e4") e explique por que é uma boa jogada.
 
 Siga este formato:
-Jogada: <jogada>
+Jogada: <origem>-<destino>
 Explicação: <explicação>`,
 });
 
