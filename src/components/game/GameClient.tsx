@@ -15,6 +15,7 @@ import {
   boardToFEN,
   algebraicToCoords,
   coordsToAlgebraic,
+  isMoveValid,
   type Board,
   type PlayerColor,
   type Piece
@@ -36,12 +37,17 @@ export default function GameClient() {
   const handleMove = (from: { row: number; col: number }, to: { row: number; col: number }) => {
     const piece = board[from.row][from.col];
 
-    // Basic validation
     if (!piece || piece.color !== turn) {
       return;
     }
-    if(from.row === to.row && from.col === to.col) {
-        return;
+    
+    if (!isMoveValid(board, from, to)) {
+      toast({
+        variant: "destructive",
+        title: "Movimento Inválido",
+        description: "Esta jogada não é permitida.",
+      });
+      return;
     }
 
     const newBoard = board.map(row => [...row]);
@@ -72,13 +78,15 @@ export default function GameClient() {
 
         if (result && result.move && result.move.includes('-')) {
           const [fromAlg, toAlg] = result.move.split('-');
-          if (fromAlg && toAlg) {
-            const from = algebraicToCoords(fromAlg);
-            const to = algebraicToCoords(toAlg);
-            
-            if (from && to) {
-              handleMove(from, to);
-            }
+          const from = algebraicToCoords(fromAlg);
+          const to = algebraicToCoords(toAlg);
+          
+          if (from && to && isMoveValid(board, from, to)) {
+            handleMove(from, to);
+          } else {
+             // Se a jogada da IA for inválida, tente novamente
+             console.error("Jogada da IA inválida recebida, tentando novamente:", result.move);
+             makeOpponentMove();
           }
         } else {
             console.error("Jogada da IA inválida recebida:", result.move);
