@@ -33,7 +33,7 @@ export default function GameClient() {
   const { toast } = useToast();
 
   const handleMove = (from: { row: number; col: number }, to: { row: number; col: number }) => {
-    if (turn !== 'w' || !isMoveValid(board, from, to, turn)) {
+    if (turn !== 'w' || !isMoveValid(board, from, to)) {
       toast({
         variant: "destructive",
         title: "Movimento Inválido",
@@ -78,7 +78,7 @@ export default function GameClient() {
           const from = algebraicToCoords(fromAlg);
           const to = algebraicToCoords(toAlg);
           
-          if (from && to && isMoveValid(board, from, to, turn)) {
+          if (from && to && isMoveValid(board, from, to)) {
               const piece = board[from.row][from.col];
               if (piece && piece.color === turn) {
                 const newBoard = board.map(row => [...row]);
@@ -126,7 +126,7 @@ export default function GameClient() {
       }, 1000); 
       return () => clearTimeout(timer);
     }
-  }, [turn, board, fullMoveNumber]);
+  }, [turn, board, fullMoveNumber, toast]);
 
   return (
     <div className="bg-background h-screen flex flex-col">
@@ -147,7 +147,7 @@ export default function GameClient() {
       <main className="flex-grow p-4 overflow-hidden">
         <div className="grid grid-cols-[1fr_minmax(280px,320px)] gap-4 h-full">
           
-          <div className="flex flex-col justify-center gap-2">
+          <div className="flex flex-col gap-2">
             <PlayerProfile
               name="Oponente"
               elo={1250}
@@ -167,7 +167,7 @@ export default function GameClient() {
             />
           </div>
           
-          <div className="flex flex-col gap-4 h-full">
+          <div className="flex flex-col gap-4 overflow-hidden">
             <MoveHistory moves={moveHistory} />
             <Chat />
           </div>
