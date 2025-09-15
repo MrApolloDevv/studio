@@ -17,7 +17,6 @@ import {
   isMoveValid,
   type Board,
   type PlayerColor,
-  type Piece
 } from "@/lib/chess-logic";
 
 type Move = {
@@ -34,7 +33,7 @@ export default function GameClient() {
   const { toast } = useToast();
 
   const handleMove = (from: { row: number; col: number }, to: { row: number; col: number }) => {
-    if (!isMoveValid(board, from, to)) {
+    if (turn !== 'w' || !isMoveValid(board, from, to, turn)) {
       toast({
         variant: "destructive",
         title: "Movimento Inválido",
@@ -71,7 +70,7 @@ export default function GameClient() {
       try {
         const result = await suggestMove({
           boardState: boardToFEN(board, turn, fullMoveNumber),
-          difficulty: "medium", // A dificuldade do oponente pode ser ajustada aqui
+          difficulty: "medium",
         });
 
         if (result && result.move && result.move.includes('-')) {
@@ -79,21 +78,36 @@ export default function GameClient() {
           const from = algebraicToCoords(fromAlg);
           const to = algebraicToCoords(toAlg);
           
-          if (from && to && isMoveValid(board, from, to)) {
-            handleMove(from, to);
+          if (from && to && isMoveValid(board, from, to, turn)) {
+              const piece = board[from.row][from.col];
+              if (piece && piece.color === turn) {
+                const newBoard = board.map(row => [...row]);
+                newBoard[to.row][to.col] = piece;
+                newBoard[from.row][from.col] = null;
+
+                const moveNotation = `${coordsToAlgebraic(from.row, from.col)}-${coordsToAlgebraic(to.row, to.col)}`;
+                
+                setBoard(newBoard);
+                setLastMove({from, to});
+                setMoveHistory(prev => [...prev, moveNotation]);
+                
+                const nextTurn = turn === "w" ? "b" : "w";
+                setTurn(nextTurn);
+
+                if (nextTurn === 'w') {
+                  setFullMoveNumber(prev => prev + 1);
+                }
+              } else {
+                 console.error("Jogada da IA inválida (peça errada), tentando novamente:", result.move);
+                 makeOpponentMove();
+              }
           } else {
-             // Se a jogada da IA for inválida, tente novamente
              console.error("Jogada da IA inválida recebida, tentando novamente:", result.move);
              makeOpponentMove();
           }
         } else {
             console.error("Jogada da IA inválida recebida:", result.move);
-            toast({
-              variant: "destructive",
-              title: "Erro da IA do Oponente",
-              description: "A IA retornou uma jogada inválida. Tente novamente.",
-            });
-            setTurn('w'); // Reverter o turno se a IA falhar de forma previsível
+            makeOpponentMove();
         }
       } catch (error) {
         console.error("Erro ao obter a jogada do oponente:", error);
@@ -102,13 +116,11 @@ export default function GameClient() {
           title: "Erro da IA do Oponente",
           description: "Não foi possível obter a jogada do oponente. Por favor, tente novamente.",
         });
-        // Reverter o turno se a IA falhar
         setTurn('w');
       }
     };
 
     if (turn === 'b') {
-      // Atraso para simular o tempo de raciocínio do oponente
       const timer = setTimeout(() => {
         makeOpponentMove();
       }, 1000); 
@@ -116,14 +128,12 @@ export default function GameClient() {
     }
   }, [turn, board, fullMoveNumber]);
 
-  const fen = boardToFEN(board, turn, fullMoveNumber);
-
   return (
-    <div className="bg-background min-h-screen flex flex-col">
-      <header className="flex items-center justify-between p-4 border-b bg-card">
+    <div className="bg-background h-screen flex flex-col">
+      <header className="flex items-center justify-between p-2 border-b bg-card flex-shrink-0">
         <div className="flex items-center gap-2">
           <Crown className="text-accent h-6 w-6" />
-          <h1 className="text-xl font-bold text-foreground">Arena de Xadrez em Tempo Real</h1>
+          <h1 className="text-xl font-bold text-foreground">Arena de Xadrez</h1>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon">
@@ -134,10 +144,10 @@ export default function GameClient() {
           </Button>
         </div>
       </header>
-      <main className="flex-grow p-4 md:p-6 lg:p-8">
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-6 max-w-7xl mx-auto">
+      <main className="flex-grow p-4 overflow-hidden">
+        <div className="grid grid-cols-[1fr_minmax(280px,320px)] gap-4 h-full">
           
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col justify-center gap-2">
             <PlayerProfile
               name="Oponente"
               elo={1250}
@@ -145,7 +155,9 @@ export default function GameClient() {
               isTurn={turn === "b"}
               size="small"
             />
-            <Chessboard board={board} turn={turn} onMove={handleMove} lastMove={lastMove} />
+            <div className="flex-grow flex items-center justify-center">
+              <Chessboard board={board} turn={turn} onMove={handleMove} lastMove={lastMove} />
+            </div>
             <PlayerProfile
               name="Você"
               elo={1200}
@@ -155,7 +167,7 @@ export default function GameClient() {
             />
           </div>
           
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-4 h-full">
             <MoveHistory moves={moveHistory} />
             <Chat />
           </div>

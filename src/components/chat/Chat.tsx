@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { MessageSquare, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,6 +17,7 @@ export default function Chat() {
     { sender: "Oponente", text: "Boa sorte, divirta-se!" },
   ]);
   const [input, setInput] = useState("");
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   const handleSend = () => {
     if (input.trim()) {
@@ -26,21 +27,19 @@ export default function Chat() {
   };
 
   useEffect(() => {
-    const scrollArea = document.getElementById("chat-scroll-area");
-    if (scrollArea) {
-      scrollArea.scrollTop = scrollArea.scrollHeight;
+    if (scrollAreaRef.current) {
+      scrollAreaRef.current.scrollTo({ top: scrollAreaRef.current.scrollHeight, behavior: 'smooth' });
     }
   }, [messages]);
 
   return (
-    <div className="flex flex-col h-full gap-4">
-      <h3 className="flex items-center gap-2 font-semibold text-lg">
+    <div className="flex flex-col h-full gap-2 bg-card border rounded-lg p-2">
+      <h3 className="flex items-center gap-2 font-semibold text-md px-2">
         <MessageSquare className="h-5 w-5" />
         Bate-papo com o Oponente
       </h3>
-      <div className="flex-grow flex flex-col gap-4">
-        <ScrollArea className="flex-grow h-48 pr-4" id="chat-scroll-area">
-          <div className="space-y-4">
+      <ScrollArea className="flex-grow pr-2" viewportRef={scrollAreaRef}>
+          <div className="space-y-3 p-2">
             {messages.map((msg, index) => (
               <div
                 key={index}
@@ -70,8 +69,8 @@ export default function Chat() {
               </div>
             ))}
           </div>
-        </ScrollArea>
-        <div className="flex w-full items-center space-x-2">
+      </ScrollArea>
+      <div className="flex w-full items-center space-x-2 p-2">
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -81,7 +80,6 @@ export default function Chat() {
           <Button onClick={handleSend} size="icon">
             <Send className="h-4 w-4" />
           </Button>
-        </div>
       </div>
     </div>
   );

@@ -10,15 +10,15 @@ interface MoveHistoryProps {
 
 export default function MoveHistory({ moves }: MoveHistoryProps) {
   return (
-    <Card>
+    <Card className="flex-grow flex flex-col">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+        <CardTitle className="flex items-center gap-2 text-md">
           <History />
           Histórico de Jogadas
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <ScrollArea className="h-40 w-full pr-4">
+      <CardContent className="flex-grow overflow-hidden">
+        <ScrollArea className="h-full w-full pr-4">
           <ol className="grid grid-cols-[auto_1fr_1fr] gap-x-4 gap-y-1 text-sm">
             {Array.from({ length: Math.ceil(moves.length / 2) }).map((_, i) => (
               <li key={i} className="contents">
