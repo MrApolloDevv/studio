@@ -7,7 +7,6 @@ import MoveHistory from "./MoveHistory";
 import Chat from "@/components/chat/Chat";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { suggestMove } from "@/ai/flows/suggest-move";
 import {
   initialBoard,
   boardToFEN,
@@ -66,13 +65,23 @@ export default function GameClient() {
   useEffect(() => {
     const makeOpponentMove = async () => {
       try {
-        const result = await suggestMove({
-          boardState: boardToFEN(board, turn, fullMoveNumber),
-          difficulty: "medium",
+        const fenString = boardToFEN(board, turn, fullMoveNumber);
+        const response = await fetch('https://us-central1-chess-backend-2b0605.cloudfunctions.net/app/api/bestmove', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ fen: fenString }),
         });
 
-        if (result && result.move && result.move.includes('-')) {
-          const [fromAlg, toAlg] = result.move.split('-');
+        if (!response.ok) {
+            throw new Error(`Erro na API: ${response.statusText}`);
+        }
+
+        const result = await response.json();
+
+        if (result && result.bestMove && result.bestMove.includes('-')) {
+          const [fromAlg, toAlg] = result.bestMove.split('-');
           const from = algebraicToCoords(fromAlg);
           const to = algebraicToCoords(toAlg);
           
@@ -96,15 +105,15 @@ export default function GameClient() {
                   setFullMoveNumber(prev => prev + 1);
                 }
               } else {
-                 console.error("Jogada da IA inválida (peça errada), tentando novamente:", result.move);
+                 console.error("Jogada da IA inválida (peça errada), tentando novamente:", result.bestMove);
                  makeOpponentMove();
               }
           } else {
-             console.error("Jogada da IA inválida recebida, tentando novamente:", result.move);
+             console.error("Jogada da IA inválida recebida, tentando novamente:", result.bestMove);
              makeOpponentMove();
           }
         } else {
-            console.error("Jogada da IA inválida recebida:", result.move);
+            console.error("Jogada da IA inválida recebida:", result.bestMove);
             makeOpponentMove();
         }
       } catch (error) {
