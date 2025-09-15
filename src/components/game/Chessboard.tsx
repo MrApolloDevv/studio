@@ -73,7 +73,7 @@ export default function Chessboard({ board, turn, onMove, lastMove }: Chessboard
                 key={`${rowIndex}-${colIndex}`}
                 className={cn(
                   "relative flex items-center justify-center aspect-square",
-                  isLight ? "bg-stone-200" : "bg-primary/80",
+                  isLight ? "bg-stone-300" : "bg-emerald-700",
                   (isLastMoveFrom || isLastMoveTo) && "bg-accent/70",
                   isSelected && "bg-accent/90"
                 )}
@@ -92,10 +92,10 @@ export default function Chessboard({ board, turn, onMove, lastMove }: Chessboard
                   </div>
                 )}
                 {colIndex === 0 && (
-                  <span className={cn("absolute left-1 top-0 text-xs font-bold", isLight ? "text-primary/80" : "text-stone-200")}>{ranks[rowIndex]}</span>
+                  <span className={cn("absolute left-1 top-0 text-xs font-bold", isLight ? "text-emerald-700" : "text-stone-300")}>{ranks[rowIndex]}</span>
                 )}
                 {rowIndex === 7 && (
-                  <span className={cn("absolute right-1 bottom-0 text-xs font-bold", isLight ? "text-primary/80" : "text-stone-200")}>{files[colIndex]}</span>
+                  <span className={cn("absolute right-1 bottom-0 text-xs font-bold", isLight ? "text-emerald-700" : "text-stone-300")}>{files[colIndex]}</span>
                 )}
               </div>
             );
