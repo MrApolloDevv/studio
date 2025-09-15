@@ -51,7 +51,7 @@ const prompt = ai.definePrompt({
 Estado do Tabuleiro (FEN): {{{boardState}}}
 Dificuldade: {{{difficulty}}}
 
-Responda com a jogada sugerida em notação algébrica "origem-destino" (por exemplo, "e2-e4") e explique por que é uma boa jogada.
+Responda estritamente com a jogada sugerida em notação algébrica "origem-destino". Por exemplo, se a jogada for mover o peão de e2 para e4, a resposta para a jogada deve ser "e2-e4".
 
 Siga este formato:
 Jogada: <origem>-<destino>
