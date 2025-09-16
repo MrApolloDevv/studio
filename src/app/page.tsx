@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BrainCircuit, Smartphone, Cog, Github, Linkedin } from 'lucide-react';
 import Image from 'next/image';
 
-// Inline SVGs for tech logos for simplicity
 const NextJsLogo = () => (
   <svg width="40" height="40" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
     <circle cx="64" cy="64" r="64" fill="black"/>
