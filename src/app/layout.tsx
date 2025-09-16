@@ -3,8 +3,8 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
-  title: 'Xadrez',
-  description: 'Uma aplicação de xadrez em tempo real.',
+  title: 'Arena de Xadrez',
+  description: 'Uma plataforma de xadrez online para partidas desafiadoras contra a IA Stockfish.',
 };
 
 export default function RootLayout({
@@ -19,7 +19,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
       </head>
-      <body className="font-body antialiased h-screen overflow-hidden">
+      <body className="font-body antialiased bg-background text-foreground">
         {children}
         <Toaster />
       </body>
