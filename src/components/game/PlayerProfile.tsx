@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from "next/image";
@@ -19,22 +20,22 @@ export default function PlayerProfile({ name, elo, avatarUrl, isTurn, size = 'de
   const isSmall = size === 'small';
 
   return (
-    <Card className={cn("transition-all", isTurn && "border-accent shadow-lg")}>
-      <CardContent className={cn("flex items-center justify-between gap-4", isSmall ? "p-2" : "p-4")}>
+    <Card className={cn("transition-all w-full max-w-sm", isTurn && "border-accent shadow-lg")}>
+      <CardContent className={cn("flex items-center justify-between gap-3", isSmall ? "p-2" : "p-3")}>
         <div className="flex items-center gap-3">
-          <Avatar className={cn(isSmall ? "h-10 w-10" : "h-12 w-12", "border-2 border-primary/50")}>
+          <Avatar className={cn(isSmall ? "h-8 w-8" : "h-10 w-10", "border-2 border-primary/50")}>
             <AvatarImage src={avatarUrl} alt={name} data-ai-hint="person face" />
             <AvatarFallback>{name.charAt(0).toUpperCase()}</AvatarFallback>
           </Avatar>
-          <div>
-            <h3 className={cn("font-semibold", isSmall ? "text-base" : "text-lg")}>{name}</h3>
-            <Badge variant="secondary">Elo: {elo}</Badge>
+          <div className="flex flex-col">
+            <h3 className={cn("font-semibold", isSmall ? "text-sm" : "text-base")}>{name}</h3>
+            <span className="text-xs text-muted-foreground">Elo: {elo}</span>
           </div>
         </div>
         {isTurn && (
           <div className="flex items-center gap-2 text-accent animate-pulse">
-            <Clock className="h-5 w-5" />
-            <span className="font-semibold text-sm">Pensando...</span>
+            <Clock className="h-4 w-4" />
+            <span className="font-semibold text-xs">Pensando...</span>
           </div>
         )}
       </CardContent>

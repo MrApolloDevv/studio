@@ -5,7 +5,6 @@ import { useState, useEffect } from "react";
 import { Crown, User, Settings, Menu } from "lucide-react";
 import Chessboard from "./Chessboard";
 import MoveHistory from "./MoveHistory";
-import Chat from "@/components/chat/Chat";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -19,8 +18,6 @@ import {
   type PlayerColor,
   type Piece,
 } from "@/lib/chess-logic";
-import { Card, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import PlayerProfile from "./PlayerProfile";
 
@@ -51,7 +48,6 @@ export default function GameClient() {
     const from = fromSquare || selectedSquare;
     const to = { row, col };
 
-    // If a piece is selected, try to move it
     if (from) {
       const piece = board[from.row][from.col];
       const moveValidation = isMoveValid(board, from, to);
@@ -60,7 +56,6 @@ export default function GameClient() {
         const newBoard = board.map(row => row.map(p => p ? {...p} : null));
         const movedPiece: Piece = { ...piece, hasMoved: true };
         
-        // Handle castling
         if (piece.type === 'K' && Math.abs(to.col - from.col) === 2) {
           const isShortCastle = to.col > from.col;
           const rookCol = isShortCastle ? 7 : 0;
@@ -99,7 +94,6 @@ export default function GameClient() {
           setFullMoveNumber(prev => prev + 1);
         }
       } else {
-        // Invalid move or clicking on another piece
         const pieceAtClickedSquare = board[row][col];
         if (pieceAtClickedSquare && pieceAtClickedSquare.color === 'w') {
             setSelectedSquare({row, col});
@@ -114,7 +108,6 @@ export default function GameClient() {
         }
       }
     } else {
-      // If no piece is selected, select the clicked piece
       const pieceAtClickedSquare = board[row][col];
       if (pieceAtClickedSquare && pieceAtClickedSquare.color === 'w') {
         setSelectedSquare({ row, col });
@@ -243,7 +236,6 @@ export default function GameClient() {
                 <SheetContent>
                     <div className="flex flex-col gap-4 pt-8">
                         <MoveHistory moves={moveHistory} />
-                        <Chat />
                     </div>
                 </SheetContent>
             </Sheet>
@@ -274,7 +266,6 @@ export default function GameClient() {
           
           <div className="hidden md:flex flex-col gap-4 overflow-y-auto">
             <MoveHistory moves={moveHistory} />
-            <Chat />
           </div>
 
         </div>
@@ -282,9 +273,3 @@ export default function GameClient() {
     </div>
   );
 }
-
-  
-
-    
-
-    
