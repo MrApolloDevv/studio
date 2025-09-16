@@ -262,7 +262,7 @@ export default function GameClient() {
                   selectedSquare={selectedSquare}
                 />
               </div>
-              <div className="md:hidden flex w-full justify-around items-start gap-2">
+              <div className="md:hidden flex w-full justify-around items-start gap-2 mt-2.5">
                 <PlayerProfile name="Oponente" elo={1500} avatarUrl="https://picsum.photos/seed/2/100/100" isTurn={turn === 'b'} />
                 <PlayerProfile name="Você" elo={1400} avatarUrl="https://picsum.photos/seed/1/100/100" isTurn={turn === 'w'} />
               </div>
