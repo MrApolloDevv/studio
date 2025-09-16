@@ -161,7 +161,7 @@ export default function HomePage() {
             <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
               <Github className="w-5 h-5" />
             </a>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
+            <a href="https://www.linkedin.com/in/robson-orlando-rodrigues-rosa-61a196340" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
               <Linkedin className="w-5 h-5" />
             </a>
           </div>
