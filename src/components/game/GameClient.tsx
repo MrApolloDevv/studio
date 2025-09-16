@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Crown, User, Settings } from "lucide-react";
+import { Crown, User, Settings, Menu } from "lucide-react";
 import Chessboard from "./Chessboard";
 import MoveHistory from "./MoveHistory";
 import Chat from "@/components/chat/Chat";
@@ -20,6 +20,8 @@ import {
 } from "@/lib/chess-logic";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import PlayerProfile from "./PlayerProfile";
 
 type Move = {
   from: { row: number; col: number };
@@ -37,20 +39,21 @@ export default function GameClient() {
   const [selectedSquare, setSelectedSquare] = useState<{ row: number; col: number } | null>(null);
   const { toast } = useToast();
 
-  const handleSquareClick = (row: number, col: number) => {
+  const handleSquareClick = (row: number, col: number, fromSquare?: { row: number; col: number }) => {
     if (turn !== 'w') return;
 
-    const pieceAtClickedSquare = board[row][col];
+    const from = fromSquare || selectedSquare;
+    const to = { row, col };
 
-    if (selectedSquare) {
-      const from = selectedSquare;
-      const to = { row, col };
+    // If a piece is selected, try to move it
+    if (from) {
       const piece = board[from.row][from.col];
 
       if (piece && isMoveValid(board, from, to)) {
         const newBoard = board.map(row => row.map(p => p ? {...p} : null));
         const movedPiece: Piece = { ...piece, hasMoved: true };
         
+        // Handle castling
         if (piece.type === 'K' && Math.abs(to.col - from.col) === 2) {
           const isShortCastle = to.col > from.col;
           const rookCol = isShortCastle ? 7 : 0;
@@ -83,17 +86,23 @@ export default function GameClient() {
           setFullMoveNumber(prev => prev + 1);
         }
       } else {
+        // Invalid move or clicking on another piece
+        const pieceAtClickedSquare = board[row][col];
         if (pieceAtClickedSquare && pieceAtClickedSquare.color === 'w') {
             setSelectedSquare({row, col});
             setValidMoves(getValidMoves(board, {row, col}));
         } else {
             setSelectedSquare(null);
             setValidMoves([]);
-            setInvalidMoveFrom(from);
-            setTimeout(() => setInvalidMoveFrom(null), 300);
+            if (from) {
+                setInvalidMoveFrom(from);
+                setTimeout(() => setInvalidMoveFrom(null), 300);
+            }
         }
       }
     } else {
+      // If no piece is selected, select the clicked piece
+      const pieceAtClickedSquare = board[row][col];
       if (pieceAtClickedSquare && pieceAtClickedSquare.color === 'w') {
         setSelectedSquare({ row, col });
         setValidMoves(getValidMoves(board, { row, col }));
@@ -197,17 +206,30 @@ export default function GameClient() {
   }, [turn, board, fullMoveNumber, toast]);
 
   return (
-    <div className="bg-background h-screen flex flex-col dark">
+    <div className="bg-background h-screen flex flex-col dark overflow-hidden">
       <header className="flex items-center justify-between p-2 border-b bg-card flex-shrink-0">
         <div className="flex items-center gap-2">
           <Crown className="text-accent h-6 w-6" />
           <h1 className="text-xl font-bold text-foreground">Arena de Xadrez</h1>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon">
+            <Sheet>
+                <SheetTrigger asChild>
+                    <Button variant="ghost" size="icon" className="md:hidden">
+                        <Menu />
+                    </Button>
+                </SheetTrigger>
+                <SheetContent>
+                    <div className="flex flex-col gap-4 pt-8">
+                        <MoveHistory moves={moveHistory} />
+                        <Chat />
+                    </div>
+                </SheetContent>
+            </Sheet>
+          <Button variant="ghost" size="icon" className="hidden md:inline-flex">
             <User />
           </Button>
-          <Button variant="ghost" size="icon">
+          <Button variant="ghost" size="icon" className="hidden md:inline-flex">
             <Settings />
           </Button>
         </div>
@@ -215,7 +237,8 @@ export default function GameClient() {
       <main className="flex-grow p-2 md:p-4 overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-[1fr_minmax(280px,320px)] gap-4 h-full">
           
-          <div className="flex flex-col items-center justify-center">
+          <div className="flex flex-col items-center justify-center gap-2">
+              <PlayerProfile name="Oponente" elo={1500} avatarUrl="https://picsum.photos/seed/2/100/100" isTurn={turn === 'b'} size="small" />
               <Chessboard 
                 board={board} 
                 turn={turn} 
@@ -225,28 +248,10 @@ export default function GameClient() {
                 validMoves={validMoves}
                 selectedSquare={selectedSquare}
               />
+              <PlayerProfile name="Você" elo={1400} avatarUrl="https://picsum.photos/seed/1/100/100" isTurn={turn === 'w'} size="small" />
           </div>
           
-          <div className="hidden md:flex flex-col gap-4 overflow-hidden">
-            <Card>
-                <CardContent className="flex items-center justify-center p-4 gap-4">
-                    <div className="flex flex-col items-center gap-2">
-                        <Avatar>
-                            <AvatarImage src="https://picsum.photos/seed/2/100/100" data-ai-hint="person face" />
-                            <AvatarFallback>O</AvatarFallback>
-                        </Avatar>
-                        <span className="font-semibold">Oponente</span>
-                    </div>
-                    <span className="text-muted-foreground font-bold text-lg">vs</span>
-                    <div className="flex flex-col items-center gap-2">
-                        <Avatar>
-                            <AvatarImage src="https://picsum.photos/seed/1/100/100" data-ai-hint="person face" />
-                            <AvatarFallback>V</AvatarFallback>
-                        </Avatar>
-                        <span className="font-semibold">Você</span>
-                    </div>
-                </CardContent>
-            </Card>
+          <div className="hidden md:flex flex-col gap-4 overflow-y-auto">
             <MoveHistory moves={moveHistory} />
             <Chat />
           </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { type Piece, type Board, type PlayerColor } from "@/lib/chess-logic";
 import { getPieceComponent } from "@/components/icons/ChessPieces";
 import { cn } from "@/lib/utils";
@@ -14,7 +14,7 @@ interface ChessboardProps {
   board: Board;
   turn: PlayerColor;
   lastMove: Move | null;
-  onSquareClick: (row: number, col: number) => void;
+  onSquareClick: (toRow: number, toCol: number, from?: { row: number; col: number }) => void;
   invalidMoveFrom: { row: number; col: number } | null;
   validMoves: { row: number; col: number }[];
   selectedSquare: { row: number; col: number } | null;
@@ -28,10 +28,8 @@ export default function Chessboard({ board, turn, onSquareClick, lastMove, inval
       e.preventDefault();
       return;
     }
-    onSquareClick(row, col); // Select the piece on drag start
     setDraggedPiece({ row, col, piece });
     e.dataTransfer.effectAllowed = 'move';
-    // Use a transparent image to hide the default drag preview
     const img = new Image();
     img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
     e.dataTransfer.setDragImage(img, 0, 0);
@@ -43,7 +41,7 @@ export default function Chessboard({ board, turn, onSquareClick, lastMove, inval
 
   const handleDrop = (row: number, col: number) => {
     if (draggedPiece) {
-      onSquareClick(row, col);
+      onSquareClick(row, col, { row: draggedPiece.row, col: draggedPiece.col });
       setDraggedPiece(null);
     }
   };
@@ -51,7 +49,6 @@ export default function Chessboard({ board, turn, onSquareClick, lastMove, inval
   const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>, row: number, col: number) => {
     const piece = board[row][col];
     if (piece && piece.color === turn) {
-      onSquareClick(row, col);
       setDraggedPiece({ row, col, piece });
     }
   };
@@ -74,7 +71,7 @@ export default function Chessboard({ board, turn, onSquareClick, lastMove, inval
         const col = Math.floor((touch.clientX - boardRect.left) / squareSize);
         const row = Math.floor((touch.clientY - boardRect.top) / squareSize);
         if (row >= 0 && row < 8 && col >= 0 && col < 8) {
-          onSquareClick(row, col);
+           onSquareClick(row, col, { row: draggedPiece.row, col: draggedPiece.col });
         }
       }
       setDraggedPiece(null);
@@ -113,14 +110,23 @@ export default function Chessboard({ board, turn, onSquareClick, lastMove, inval
                 onDragOver={handleDragOver}
                 onDrop={() => handleDrop(rowIndex, colIndex)}
                 onClick={() => onSquareClick(rowIndex, colIndex)}
-                onTouchStart={(e) => handleTouchStart(e, rowIndex, colIndex)}
+                onTouchStart={(e) => {
+                  const piece = board[rowIndex][colIndex];
+                  if (piece && piece.color === turn) {
+                    handleTouchStart(e, rowIndex, colIndex);
+                  } else {
+                    onSquareClick(rowIndex, colIndex);
+                  }
+                }}
               >
                 {piece && (
                   <div
                     draggable
                     onDragStart={(e) => handleDragStart(e, rowIndex, colIndex, piece)}
-                    className="cursor-grab active:cursor-grabbing w-full h-full flex items-center justify-center transition-transform duration-200 ease-in-out"
-                    style={{ transform: (draggedPiece?.row === rowIndex && draggedPiece?.col === colIndex) ? 'scale(1.2) rotate(5deg)' : 'scale(1)'}}
+                    className={cn(
+                      "cursor-grab active:cursor-grabbing w-full h-full flex items-center justify-center transition-transform duration-200 ease-in-out",
+                       (draggedPiece?.row === rowIndex && draggedPiece?.col === colIndex) ? 'opacity-50' : 'opacity-100'
+                    )}
                   >
                     {getPieceComponent(piece.type, piece.color)}
                   </div>
