@@ -3,6 +3,7 @@
 import {
   AlertDialog,
   AlertDialogAction,
+  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
@@ -10,6 +11,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { PartyPopper, Frown } from 'lucide-react';
+import Link from "next/link";
 
 interface GameOverDialogProps {
   isOpen: boolean;
@@ -37,7 +39,10 @@ export default function GameOverDialog({ isOpen, message, onNewGame }: GameOverD
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogAction onClick={onNewGame} className="w-full">
+          <AlertDialogCancel asChild>
+            <Link href="/">Voltar ao Menu</Link>
+          </AlertDialogCancel>
+          <AlertDialogAction onClick={onNewGame}>
             Jogar Novamente
           </AlertDialogAction>
         </AlertDialogFooter>
