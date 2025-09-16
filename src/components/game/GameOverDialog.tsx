@@ -38,7 +38,7 @@ export default function GameOverDialog({ isOpen, message, onNewGame }: GameOverD
             Obrigado por jogar!
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter>
+        <AlertDialogFooter className="sm:justify-center">
           <AlertDialogCancel asChild>
             <Link href="/">Voltar ao Menu</Link>
           </AlertDialogCancel>
