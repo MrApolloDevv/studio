@@ -28,8 +28,10 @@ export default function Chessboard({ board, turn, onSquareClick, lastMove, inval
       e.preventDefault();
       return;
     }
+    onSquareClick(row, col); // Select the piece on drag start
     setDraggedPiece({ row, col, piece });
     e.dataTransfer.effectAllowed = 'move';
+    // Use a transparent image to hide the default drag preview
     const img = new Image();
     img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
     e.dataTransfer.setDragImage(img, 0, 0);
@@ -46,11 +48,48 @@ export default function Chessboard({ board, turn, onSquareClick, lastMove, inval
     }
   };
 
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>, row: number, col: number) => {
+    const piece = board[row][col];
+    if (piece && piece.color === turn) {
+      onSquareClick(row, col);
+      setDraggedPiece({ row, col, piece });
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (draggedPiece) {
+      e.preventDefault(); // Block screen scrolling
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (draggedPiece) {
+      const touch = e.changedTouches[0];
+      const element = document.elementFromPoint(touch.clientX, touch.clientY);
+      const boardElement = e.currentTarget.parentElement;
+  
+      if (element && boardElement && boardElement.contains(element)) {
+        const boardRect = boardElement.getBoundingClientRect();
+        const squareSize = boardRect.width / 8;
+        const col = Math.floor((touch.clientX - boardRect.left) / squareSize);
+        const row = Math.floor((touch.clientY - boardRect.top) / squareSize);
+        if (row >= 0 && row < 8 && col >= 0 && col < 8) {
+          onSquareClick(row, col);
+        }
+      }
+      setDraggedPiece(null);
+    }
+  };
+
+
   const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
   const ranks = ['8', '7', '6', '5', '4', '3', '2', '1'];
 
   return (
-    <div className="relative aspect-square w-full max-w-[calc(100vh-8rem)] mx-auto shadow-2xl rounded-lg overflow-hidden">
+    <div className="relative aspect-square w-full max-w-[calc(100vh-8rem)] mx-auto shadow-2xl rounded-lg overflow-hidden" 
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
       <div className="grid grid-cols-8 grid-rows-8 h-full">
         {board.map((row, rowIndex) =>
           row.map((piece, colIndex) => {
@@ -74,6 +113,7 @@ export default function Chessboard({ board, turn, onSquareClick, lastMove, inval
                 onDragOver={handleDragOver}
                 onDrop={() => handleDrop(rowIndex, colIndex)}
                 onClick={() => onSquareClick(rowIndex, colIndex)}
+                onTouchStart={(e) => handleTouchStart(e, rowIndex, colIndex)}
               >
                 {piece && (
                   <div

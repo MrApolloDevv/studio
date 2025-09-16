@@ -40,8 +40,10 @@ export default function GameClient() {
   const handleSquareClick = (row: number, col: number) => {
     if (turn !== 'w') return;
 
+    const pieceAtClickedSquare = board[row][col];
+
     if (selectedSquare) {
-      // If a piece is selected, try to move it
+      // If a piece is already selected, try to move it
       const from = selectedSquare;
       const to = { row, col };
       const piece = board[from.row][from.col];
@@ -84,21 +86,21 @@ export default function GameClient() {
         }
       } else {
         // Invalid move or clicking another piece
-        setSelectedSquare(null);
-        setValidMoves([]);
-        const newClickedPiece = board[row][col];
-        if (newClickedPiece && newClickedPiece.color === 'w') {
-          setSelectedSquare({row, col});
-          setValidMoves(getValidMoves(board, {row, col}));
+        if (pieceAtClickedSquare && pieceAtClickedSquare.color === 'w') {
+            // If clicking another of own pieces, switch selection
+            setSelectedSquare({row, col});
+            setValidMoves(getValidMoves(board, {row, col}));
         } else {
-           setInvalidMoveFrom(from);
-           setTimeout(() => setInvalidMoveFrom(null), 300);
+            // If clicking an empty square or opponent piece, deselect
+            setSelectedSquare(null);
+            setValidMoves([]);
+            setInvalidMoveFrom(from);
+            setTimeout(() => setInvalidMoveFrom(null), 300);
         }
       }
     } else {
       // If no piece is selected, select one
-      const piece = board[row][col];
-      if (piece && piece.color === 'w') {
+      if (pieceAtClickedSquare && pieceAtClickedSquare.color === 'w') {
         setSelectedSquare({ row, col });
         setValidMoves(getValidMoves(board, { row, col }));
       }
