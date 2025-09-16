@@ -20,6 +20,7 @@ import {
 } from "@/lib/chess-logic";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import PlayerProfile from "./PlayerProfile";
+import Chat from "../chat/Chat";
 
 type Move = {
   from: { row: number; col: number };
@@ -220,7 +221,7 @@ export default function GameClient() {
   }, [turn, board, fullMoveNumber, toast]);
 
   return (
-    <div className="bg-background h-screen overflow-hidden flex flex-col dark">
+    <div className="bg-background h-screen flex flex-col dark">
       <header className="flex items-center justify-between p-2 border-b bg-card flex-shrink-0">
         <div className="flex items-center gap-2">
           <Crown className="text-accent h-6 w-6" />
@@ -235,7 +236,10 @@ export default function GameClient() {
                 </SheetTrigger>
                 <SheetContent>
                     <div className="flex flex-col gap-4 pt-8 h-full">
+                        <PlayerProfile name="Oponente" elo={1500} avatarUrl="https://picsum.photos/seed/2/100/100" isTurn={turn === 'b'} />
+                        <PlayerProfile name="Você" elo={1400} avatarUrl="https://picsum.photos/seed/1/100/100" isTurn={turn === 'w'} />
                         <MoveHistory moves={moveHistory} />
+                        <Chat />
                     </div>
                 </SheetContent>
             </Sheet>
@@ -247,7 +251,7 @@ export default function GameClient() {
           </Button>
         </div>
       </header>
-      <main className="flex-grow p-2 md:p-4">
+      <main className="flex-grow p-2 md:p-4 overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-[1fr_minmax(280px,320px)] gap-4 h-full">
           
           <div className="flex flex-col items-center justify-start md:justify-center pt-2 md:pt-0">
@@ -274,6 +278,7 @@ export default function GameClient() {
               <PlayerProfile name="Você" elo={1400} avatarUrl="https://picsum.photos/seed/1/100/100" isTurn={turn === 'w'} />
             </div>
             <MoveHistory moves={moveHistory} />
+            <Chat />
           </div>
 
         </div>
