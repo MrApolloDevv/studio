@@ -235,8 +235,6 @@ export default function GameClient() {
                 </SheetTrigger>
                 <SheetContent>
                     <div className="flex flex-col gap-4 pt-8 h-full">
-                        <PlayerProfile name="Oponente" elo={1500} avatarUrl="https://picsum.photos/seed/2/100/100" isTurn={turn === 'b'} />
-                        <PlayerProfile name="Você" elo={1400} avatarUrl="https://picsum.photos/seed/1/100/100" isTurn={turn === 'w'} />
                         <MoveHistory moves={moveHistory} />
                     </div>
                 </SheetContent>
@@ -263,6 +261,10 @@ export default function GameClient() {
                   validMoves={validMoves}
                   selectedSquare={selectedSquare}
                 />
+              </div>
+              <div className="md:hidden flex w-full justify-around items-start pt-4 gap-2">
+                <PlayerProfile name="Oponente" elo={1500} avatarUrl="https://picsum.photos/seed/2/100/100" isTurn={turn === 'b'} />
+                <PlayerProfile name="Você" elo={1400} avatarUrl="https://picsum.photos/seed/1/100/100" isTurn={turn === 'w'} />
               </div>
           </div>
           
