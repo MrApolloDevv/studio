@@ -64,16 +64,14 @@ export default function Chessboard({ board, turn, onSquareClick, lastMove, inval
   const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
     if (draggedPiece) {
       const touch = e.changedTouches[0];
-      const element = document.elementFromPoint(touch.clientX, touch.clientY);
-      const boardElement = e.currentTarget.parentElement;
-  
-      if (element && boardElement && boardElement.contains(element)) {
-        const boardRect = boardElement.getBoundingClientRect();
-        const squareSize = boardRect.width / 8;
-        const col = Math.floor((touch.clientX - boardRect.left) / squareSize);
-        const row = Math.floor((touch.clientY - boardRect.top) / squareSize);
-        if (row >= 0 && row < 8 && col >= 0 && col < 8) {
-           onSquareClick(row, col, { row: draggedPiece.row, col: draggedPiece.col });
+      const dropTarget = document.elementFromPoint(touch.clientX, touch.clientY);
+      const square = dropTarget?.closest('[data-row-index][data-col-index]');
+
+      if (square) {
+        const toRow = parseInt(square.getAttribute('data-row-index')!, 10);
+        const toCol = parseInt(square.getAttribute('data-col-index')!, 10);
+        if (!isNaN(toRow) && !isNaN(toCol)) {
+          onSquareClick(toRow, toCol, { row: draggedPiece.row, col: draggedPiece.col });
         }
       }
       setDraggedPiece(null);
@@ -102,6 +100,8 @@ export default function Chessboard({ board, turn, onSquareClick, lastMove, inval
             return (
               <div
                 key={`${rowIndex}-${colIndex}`}
+                data-row-index={rowIndex}
+                data-col-index={colIndex}
                 className={cn(
                   "relative flex items-center justify-center aspect-square transition-colors duration-300",
                   isLight ? "bg-stone-300" : "bg-emerald-800",
