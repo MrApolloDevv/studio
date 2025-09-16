@@ -252,7 +252,7 @@ export default function GameClient() {
       <main className="flex-grow p-2 md:p-4 overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-[1fr_minmax(280px,320px)] gap-4 h-full">
           
-          <div className="flex flex-col items-center justify-center min-h-0 mt-[-200px] md:mt-0">
+          <div className="flex flex-col items-center justify-center min-h-0 mt-[-250px] md:mt-0">
               <div className="w-full flex-grow flex items-center justify-center min-h-0">
                 <Chessboard 
                   board={board} 
