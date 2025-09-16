@@ -83,7 +83,7 @@ export default function Chessboard({ board, turn, onSquareClick, lastMove, inval
   const ranks = ['8', '7', '6', '5', '4', '3', '2', '1'];
 
   return (
-    <div className="relative aspect-square w-full max-w-[calc(100vh-8rem)] mx-auto shadow-2xl rounded-lg overflow-hidden" 
+    <div className="relative aspect-square w-full max-w-[calc(100vh-11rem)] mx-auto shadow-2xl rounded-lg overflow-hidden" 
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
@@ -150,3 +150,5 @@ export default function Chessboard({ board, turn, onSquareClick, lastMove, inval
     </div>
   );
 }
+
+    
