@@ -43,7 +43,6 @@ export default function GameClient() {
     const pieceAtClickedSquare = board[row][col];
 
     if (selectedSquare) {
-      // If a piece is already selected, try to move it
       const from = selectedSquare;
       const to = { row, col };
       const piece = board[from.row][from.col];
@@ -52,7 +51,6 @@ export default function GameClient() {
         const newBoard = board.map(row => row.map(p => p ? {...p} : null));
         const movedPiece: Piece = { ...piece, hasMoved: true };
         
-        // Handle castling
         if (piece.type === 'K' && Math.abs(to.col - from.col) === 2) {
           const isShortCastle = to.col > from.col;
           const rookCol = isShortCastle ? 7 : 0;
@@ -85,13 +83,10 @@ export default function GameClient() {
           setFullMoveNumber(prev => prev + 1);
         }
       } else {
-        // Invalid move or clicking another piece
         if (pieceAtClickedSquare && pieceAtClickedSquare.color === 'w') {
-            // If clicking another of own pieces, switch selection
             setSelectedSquare({row, col});
             setValidMoves(getValidMoves(board, {row, col}));
         } else {
-            // If clicking an empty square or opponent piece, deselect
             setSelectedSquare(null);
             setValidMoves([]);
             setInvalidMoveFrom(from);
@@ -99,7 +94,6 @@ export default function GameClient() {
         }
       }
     } else {
-      // If no piece is selected, select one
       if (pieceAtClickedSquare && pieceAtClickedSquare.color === 'w') {
         setSelectedSquare({ row, col });
         setValidMoves(getValidMoves(board, { row, col }));
@@ -203,7 +197,7 @@ export default function GameClient() {
   }, [turn, board, fullMoveNumber, toast]);
 
   return (
-    <div className="bg-background min-h-screen flex flex-col dark">
+    <div className="bg-background h-screen flex flex-col dark">
       <header className="flex items-center justify-between p-2 border-b bg-card flex-shrink-0">
         <div className="flex items-center gap-2">
           <Crown className="text-accent h-6 w-6" />
@@ -218,7 +212,7 @@ export default function GameClient() {
           </Button>
         </div>
       </header>
-      <main className="flex-grow p-2 md:p-4 overflow-auto">
+      <main className="flex-grow p-2 md:p-4 overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-[1fr_minmax(280px,320px)] gap-4 h-full">
           
           <div className="flex flex-col items-center justify-center">
@@ -233,7 +227,7 @@ export default function GameClient() {
               />
           </div>
           
-          <div className="flex flex-col gap-4 overflow-hidden">
+          <div className="hidden md:flex flex-col gap-4 overflow-hidden">
             <Card>
                 <CardContent className="flex items-center justify-center p-4 gap-4">
                     <div className="flex flex-col items-center gap-2">
