@@ -32,14 +32,15 @@ A aplicação utiliza uma arquitetura moderna baseada em componentes, com uma cl
 
 ### Backend e Lógica
 
-* **Motor de Xadrez (IA)**: A IA do oponente é fornecida pelo **Stockfish**, executado em um serviço externo.
-* **Lógica do Jogo**: O arquivo `src/lib/chess-logic.ts` é o "cérebro" do projeto, contendo todas as regras do xadrez, validação de movimentos, e a geração do estado do tabuleiro no formato **FEN**.
+* **Motor de Xadrez (IA)**: A IA do oponente é fornecida pelo **Stockfish**, um motor de xadrez de código aberto.
+* **Lógica do Jogo**: O arquivo `src/lib/chess-logic.ts` é o "cérebro" do projeto, contendo todas as regras do xadrez, validação de movimentos e a geração do estado do tabuleiro no formato **FEN**.
 * **IA (Alternativa/Futura)**: O projeto inclui a estrutura do **Genkit (Google AI)** em `src/ai/` para permitir a futura integração de modelos de IA generativa, como o Gemini, para sugestões de jogadas ou análises avançadas.
 
 ### Infraestrutura
 
-* **Hospedagem**: O projeto é hospedado no **Firebase App Hosting**.
-* **Backend Service**: O motor Stockfish é executado como uma **Google Cloud Function**, garantindo que o processamento pesado não afete a performance do frontend.
+O projeto é hospedado no **Firebase App Hosting**, que se integra perfeitamente com a Google Cloud Platform para o backend.
+
+* **Google Cloud Function**: O motor Stockfish é executado como uma **Cloud Function**. Isso garante que o processamento pesado da IA não afete a performance do frontend. Cada requisição de um movimento da IA aciona uma função na nuvem, que roda o Stockfish, calcula a jogada e retorna o resultado. Essa abordagem _serverless_ é ideal para performance e escalabilidade, já que a função só é executada quando necessário.
 
 ---
 
@@ -50,28 +51,28 @@ A estrutura do projeto é organizada para facilitar a manutenção e escalabilid
 ```
 
 /
-├── public/                  \# Arquivos estáticos (imagens das peças, sons)
-│   ├── pieces/              \# Imagens SVG das peças de xadrez
-│   └── sounds/              \# Efeitos sonoros
+├── public/                \# Arquivos estáticos (imagens das peças, sons)
+│   ├── pieces/            \# Imagens SVG das peças de xadrez
+│   └── sounds/            \# Efeitos sonoros
 ├── src/
-│   ├── ai/                  \# Lógica relacionada à IA com Genkit
-│   │   └── flows/           \# Fluxos de IA (ex: suggest-move.ts)
-│   ├── app/                 \# Rotas da aplicação (App Router)
-│   │   ├── game/            \# Rota da página do jogo
-│   │   │   └── page.tsx
-│   │   ├── globals.css      \# Estilos globais e variáveis de tema (Tailwind)
-│   │   ├── layout.tsx       \# Layout principal da aplicação
-│   │   └── page.tsx         \# Página inicial (landing page)
-│   ├── components/          \# Componentes React
-│   │   ├── game/            \# Componentes específicos do jogo (Tabuleiro, Histórico, etc.)
-│   │   └── ui/              \# Componentes de UI genéricos (ShadCN)
-│   ├── hooks/               \# Hooks customizados (ex: use-toast.ts)
-│   └── lib/                 \# Lógica principal e utilitários
-│       ├── chess-logic.ts   \# Regras do xadrez, validação de movimentos
-│       └── utils.ts         \# Funções utilitárias (ex: cn para classes)
-├── next.config.ts           \# Configurações do Next.js
-├── package.json             \# Dependências e scripts do projeto
-└── README.md                \# Este arquivo
+│   ├── ai/                \# Lógica relacionada à IA com Genkit
+│   │   └── flows/         \# Fluxos de IA (ex: suggest-move.ts)
+│   ├── app/               \# Rotas da aplicação (App Router)
+│   │   ├── game/          \# Rota da página do jogo
+│   │   │   └── page.tsx
+│   │   ├── globals.css    \# Estilos globais e variáveis de tema (Tailwind)
+│   │   ├── layout.tsx     \# Layout principal da aplicação
+│   │   └── page.tsx       \# Página inicial (landing page)
+│   ├── components/        \# Componentes React
+│   │   ├── game/          \# Componentes específicos do jogo (Tabuleiro, Histórico, etc.)
+│   │   └── ui/            \# Componentes de UI genéricos (ShadCN)
+│   ├── hooks/             \# Hooks customizados (ex: use-toast.ts)
+│   └── lib/               \# Lógica principal e utilitários
+│       ├── chess-logic.ts   \# Regras do xadrez, validação de movimentos
+│       └── utils.ts       \# Funções utilitárias (ex: cn para classes)
+├── next.config.ts         \# Configurações do Next.js
+├── package.json           \# Dependências e scripts do projeto
+└── README.md              \# Este arquivo
 
 ````
 
