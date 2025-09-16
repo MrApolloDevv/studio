@@ -10,6 +10,12 @@ export interface Piece {
 export type Square = Piece | null;
 export type Board = Square[][];
 
+type MoveValidationResult = {
+  valid: boolean;
+  isCheck: boolean;
+};
+
+
 const createPiece = (type: PieceSymbol, color: PlayerColor): Piece => ({ type, color, hasMoved: false });
 
 export const initialBoard: Board = [
@@ -106,12 +112,12 @@ function isPseudoMoveValid(board: Board, from: { row: number; col: number }, to:
   return false;
 }
 
-export function isMoveValid(board: Board, from: { row: number; col: number }, to: { row: number; col: number }): boolean {
+export function isMoveValid(board: Board, from: { row: number; col: number }, to: { row: number; col: number }): MoveValidationResult {
   const piece = board[from.row][from.col];
-  if (!piece) return false;
+  if (!piece) return { valid: false, isCheck: false };
 
   if (!isPseudoMoveValid(board, from, to)) {
-    return false;
+    return { valid: false, isCheck: false };
   }
   
   if (piece.type === 'K' && Math.abs(to.col - from.col) === 2) {
@@ -119,12 +125,12 @@ export function isMoveValid(board: Board, from: { row: number; col: number }, to
       const opponentColor = kingColor === 'w' ? 'b' : 'w';
 
       if (isSquareUnderAttack(board, from.row, from.col, opponentColor)) {
-          return false;
+          return { valid: false, isCheck: false };
       }
 
       const passCol = from.col + (to.col > from.col ? 1 : -1);
       if (isSquareUnderAttack(board, from.row, passCol, opponentColor) || isSquareUnderAttack(board, from.row, to.col, opponentColor)) {
-          return false;
+          return { valid: false, isCheck: false };
       }
   }
 
@@ -134,12 +140,24 @@ export function isMoveValid(board: Board, from: { row: number; col: number }, to
 
   const kingPos = findKing(newBoard, piece.color);
   if (!kingPos) {
-    return true; 
+    return { valid: true, isCheck: false }; // Should not happen in a real game
   }
 
   const opponentColor = piece.color === 'w' ? 'b' : 'w';
-  return !isSquareUnderAttack(newBoard, kingPos.row, kingPos.col, opponentColor);
+  if (isSquareUnderAttack(newBoard, kingPos.row, kingPos.col, opponentColor)) {
+    return { valid: false, isCheck: false }; // Move leaves king in check
+  }
+
+  // Check if this move puts the opponent's king in check
+  const opponentKingPos = findKing(newBoard, opponentColor);
+  let isCheck = false;
+  if (opponentKingPos) {
+      isCheck = isSquareUnderAttack(newBoard, opponentKingPos.row, opponentKingPos.col, piece.color);
+  }
+
+  return { valid: true, isCheck };
 }
+
 
 function isPathClear(board: Board, from: { row: number; col: number }, to: { row: number; col: number }): boolean {
     const dRow = Math.sign(to.row - from.row);
@@ -230,7 +248,7 @@ export function getValidMoves(board: Board, from: { row: number; col: number }):
 
   for (let toRow = 0; toRow < 8; toRow++) {
     for (let toCol = 0; toCol < 8; toCol++) {
-      if (isMoveValid(board, from, { row: toRow, col: toCol })) {
+      if (isMoveValid(board, from, { row: toRow, col: toCol }).valid) {
         validMoves.push({ row: toRow, col: toCol });
       }
     }

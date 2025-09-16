@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -28,6 +29,11 @@ type Move = {
   to: { row: number; col: number };
 };
 
+const playSound = (sound: 'move' | 'check') => {
+  const audio = new Audio(sound === 'move' ? '/sounds/move-self.mp3' : '/sounds/check.mp3');
+  audio.play().catch(error => console.error("Erro ao tocar o som:", error));
+};
+
 export default function GameClient() {
   const [board, setBoard] = useState<Board>(initialBoard);
   const [turn, setTurn] = useState<PlayerColor>("w");
@@ -48,8 +54,9 @@ export default function GameClient() {
     // If a piece is selected, try to move it
     if (from) {
       const piece = board[from.row][from.col];
+      const moveValidation = isMoveValid(board, from, to);
 
-      if (piece && isMoveValid(board, from, to)) {
+      if (piece && piece.color === 'w' && moveValidation.valid) {
         const newBoard = board.map(row => row.map(p => p ? {...p} : null));
         const movedPiece: Piece = { ...piece, hasMoved: true };
         
@@ -79,6 +86,12 @@ export default function GameClient() {
         setSelectedSquare(null);
         setValidMoves([]);
         
+        if (moveValidation.isCheck) {
+          playSound('check');
+        } else {
+          playSound('move');
+        }
+
         const nextTurn = turn === "w" ? "b" : "w";
         setTurn(nextTurn);
 
@@ -134,9 +147,11 @@ export default function GameClient() {
           const from = algebraicToCoords(fromAlg);
           const to = algebraicToCoords(toAlg);
           
-          if (from && to && isMoveValid(board, from, to)) {
+          if (from && to) {
               const piece = board[from.row][from.col];
-              if (piece && piece.color === turn) {
+              const moveValidation = isMoveValid(board, from, to);
+
+              if (piece && piece.color === turn && moveValidation.valid) {
                 const newBoard = board.map(row => row.map(p => p ? {...p} : null));
                 const movedPiece: Piece = { ...piece, hasMoved: true };
 
@@ -162,6 +177,12 @@ export default function GameClient() {
                 setBoard(newBoard);
                 setLastMove({from, to});
                 setMoveHistory(prev => [...prev, moveNotation]);
+                
+                if (moveValidation.isCheck) {
+                  playSound('check');
+                } else {
+                  playSound('move');
+                }
                 
                 const nextTurn = turn === "w" ? "b" : "w";
                 setTurn(nextTurn);
@@ -261,3 +282,5 @@ export default function GameClient() {
     </div>
   );
 }
+
+  
