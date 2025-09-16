@@ -1,4 +1,4 @@
-# **App Name**: Realtime Chess Arena
+# **App Name**: Xadrez
 
 ## Core Features:
 
