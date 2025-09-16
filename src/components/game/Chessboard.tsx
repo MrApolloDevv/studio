@@ -28,6 +28,7 @@ export default function Chessboard({ board, turn, onSquareClick, lastMove, inval
       e.preventDefault();
       return;
     }
+    onSquareClick(row, col); // Show valid moves on drag start
     setDraggedPiece({ row, col, piece });
     e.dataTransfer.effectAllowed = 'move';
     const img = new Image();
@@ -49,6 +50,7 @@ export default function Chessboard({ board, turn, onSquareClick, lastMove, inval
   const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>, row: number, col: number) => {
     const piece = board[row][col];
     if (piece && piece.color === turn) {
+      onSquareClick(row, col); // Show valid moves on touch start
       setDraggedPiece({ row, col, piece });
     }
   };
@@ -150,5 +152,3 @@ export default function Chessboard({ board, turn, onSquareClick, lastMove, inval
     </div>
   );
 }
-
-    
