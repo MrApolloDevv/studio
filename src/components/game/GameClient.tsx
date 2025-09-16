@@ -260,7 +260,7 @@ export default function GameClient() {
                         <SheetTitle>Opções do Jogo</SheetTitle>
                     </SheetHeader>
                     <div className="flex flex-col gap-4 pt-8 h-full">
-                        <PlayerProfile name="Stockfish" elo={3000} avatarUrl="https://picsum.photos/seed/2/100/100" isTurn={turn === 'b'} />
+                        <PlayerProfile name="Stockfish" elo={3000} avatarUrl="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRik8giQTf9hGDMvzYc2iNnBeQXzQ217Nu4Jg&s" isTurn={turn === 'b'} />
                         <PlayerProfile name="Você" elo={1400} avatarUrl="https://picsum.photos/seed/1/100/100" isTurn={turn === 'w'} />
                         <MoveHistory moves={moveHistory} />
                     </div>
@@ -287,14 +287,14 @@ export default function GameClient() {
                 />
               </div>
               <div className="md:hidden flex w-full justify-around items-start gap-2 mt-2.5">
-                <PlayerProfile name="Stockfish" elo={3000} avatarUrl="https://picsum.photos/seed/2/100/100" isTurn={turn === 'b'} />
+                <PlayerProfile name="Stockfish" elo={3000} avatarUrl="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRik8giQTf9hGDMvzYc2iNnBeQXzQ217Nu4Jg&s" isTurn={turn === 'b'} />
                 <PlayerProfile name="Você" elo={1400} avatarUrl="https://picsum.photos/seed/1/100/100" isTurn={turn === 'w'} />
               </div>
           </div>
           
           <div className="hidden md:flex flex-col gap-4 h-full">
             <div className="flex flex-col gap-4">
-              <PlayerProfile name="Stockfish" elo={3000} avatarUrl="https://picsum.photos/seed/2/100/100" isTurn={turn === 'b'} />
+              <PlayerProfile name="Stockfish" elo={3000} avatarUrl="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRik8giQTf9hGDMvzYc2iNnBeQXzQ217Nu4Jg&s" isTurn={turn === 'b'} />
               <PlayerProfile name="Você" elo={1400} avatarUrl="https://picsum.photos/seed/1/100/100" isTurn={turn === 'w'} />
             </div>
             <MoveHistory moves={moveHistory} />
