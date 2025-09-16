@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Crown, Settings, Menu } from "lucide-react";
 import Chessboard from "./Chessboard";
 import MoveHistory from "./MoveHistory";
@@ -27,11 +27,6 @@ type Move = {
   to: { row: number; col: number };
 };
 
-const playSound = (sound: 'move' | 'check') => {
-  const audio = new Audio(sound === 'move' ? '/sounds/move-sound.mp3' : '/sounds/check-sound.mp3');
-  audio.play().catch(error => console.error("Erro ao tocar o som:", error));
-};
-
 export default function GameClient() {
   const [board, setBoard] = useState<Board>(initialBoard);
   const [turn, setTurn] = useState<PlayerColor>("w");
@@ -43,8 +38,35 @@ export default function GameClient() {
   const [selectedSquare, setSelectedSquare] = useState<{ row: number; col: number } | null>(null);
   const { toast } = useToast();
 
+  const moveAudioRef = useRef<HTMLAudioElement | null>(null);
+  const checkAudioRef = useRef<HTMLAudioElement | null>(null);
+  const isAudioInitialized = useRef(false);
+
+  useEffect(() => {
+    moveAudioRef.current = new Audio('/sounds/move-sound.mp3');
+    checkAudioRef.current = new Audio('/sounds/check-sound.mp3');
+  }, []);
+
+  const playSound = (sound: 'move' | 'check') => {
+    const audioRef = sound === 'move' ? moveAudioRef : checkAudioRef;
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.play().catch(() => {});
+    }
+  };
+  
+  const initializeAudio = () => {
+    if (!isAudioInitialized.current) {
+        moveAudioRef.current?.load();
+        checkAudioRef.current?.load();
+        isAudioInitialized.current = true;
+    }
+  };
+
   const handleSquareClick = (row: number, col: number, fromSquare?: { row: number; col: number }) => {
     if (turn !== 'w') return;
+    
+    initializeAudio();
 
     const from = fromSquare || selectedSquare;
     const to = { row, col };
