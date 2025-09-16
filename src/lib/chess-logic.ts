@@ -28,9 +28,7 @@ function isSquareUnderAttack(board: Board, row: number, col: number, attackerCol
     for (let c = 0; c < 8; c++) {
       const piece = board[r][c];
       if (piece && piece.color === attackerColor) {
-        // We need a simplified isMoveValid that only checks for attack, ignoring turns and king checks
-        const canAttack = isPseudoMoveValid(board, { row: r, col: c }, { row, col });
-        if (canAttack) {
+        if (isPseudoMoveValid(board, { row: r, col: c }, { row, col })) {
           return true;
         }
       }
@@ -51,21 +49,29 @@ function findKing(board: Board, color: PlayerColor): { row: number, col: number 
     return null;
 }
 
+// A simplified validation that only checks piece movement rules, ignoring checks.
 function isPseudoMoveValid(board: Board, from: { row: number; col: number }, to: { row: number; col: number }): boolean {
   const piece = board[from.row][from.col];
   const targetPiece = board[to.row][to.col];
 
   if (!piece) return false;
-  if (targetPiece && targetPiece.color === piece.color) return false; // Can't capture same color
+  if (targetPiece && targetPiece.color === piece.color) return false;
 
   const dRow = to.row - from.row;
   const dCol = to.col - from.col;
-  const turn = piece.color;
 
   switch (piece.type) {
     case 'P':
-      const forward = turn === 'w' ? -1 : 1;
-      return Math.abs(dCol) === 1 && dRow === forward; // Only checks capture for attack
+      const forward = piece.color === 'w' ? -1 : 1;
+      const startRow = piece.color === 'w' ? 6 : 1;
+      // Move forward
+      if (dCol === 0 && !targetPiece) {
+        if (dRow === forward) return true;
+        if (dRow === 2 * forward && from.row === startRow && !board[from.row + forward][from.col]) return true;
+      }
+      // Capture
+      if (Math.abs(dCol) === 1 && dRow === forward && targetPiece) return true;
+      return false;
     case 'N':
       return (Math.abs(dRow) === 2 && Math.abs(dCol) === 1) || (Math.abs(dRow) === 1 && Math.abs(dCol) === 2);
     case 'B':
@@ -78,78 +84,74 @@ function isPseudoMoveValid(board: Board, from: { row: number; col: number }, to:
       if ((dRow !== 0 && dCol !== 0) && (Math.abs(dRow) !== Math.abs(dCol))) return false;
       return isPathClear(board, from, to);
     case 'K':
-      return Math.abs(dRow) <= 1 && Math.abs(dCol) <= 1;
+       // Standard king move
+      if (Math.abs(dRow) <= 1 && Math.abs(dCol) <= 1) return true;
+       // Castling
+      if (dRow === 0 && Math.abs(dCol) === 2) {
+          if (piece.hasMoved) return false;
+
+          const isShortCastle = dCol === 2;
+          const rookCol = isShortCastle ? 7 : 0;
+          const rook = board[from.row][rookCol];
+
+          if (!rook || rook.type !== 'R' || rook.hasMoved) return false;
+          
+          const pathStart = isShortCastle ? from.col + 1 : to.col;
+          const pathEnd = isShortCastle ? to.col : from.col;
+          for (let c = pathStart; c < pathEnd; c++) {
+              if (board[from.row][c]) return false;
+          }
+          return true;
+      }
+      return false;
   }
   return false;
 }
 
 export function isMoveValid(board: Board, from: { row: number; col: number }, to: { row: number; col: number }): boolean {
   const piece = board[from.row][from.col];
-  const targetPiece = board[to.row][to.col];
-
   if (!piece) return false;
-  if (targetPiece && targetPiece.color === piece.color) return false;
 
-  const turn = piece.color;
-  const dRow = to.row - from.row;
-  const dCol = to.col - from.col;
-
-  // Castling logic
-  if (piece.type === 'K' && Math.abs(dCol) === 2 && dRow === 0) {
-    if (piece.hasMoved) return false;
-
-    const kingPos = findKing(board, piece.color);
-    if (!kingPos || isSquareUnderAttack(board, kingPos.row, kingPos.col, turn === 'w' ? 'b' : 'w')) return false;
-
-    const isShortCastle = dCol === 2;
-    const rookCol = isShortCastle ? 7 : 0;
-    const rook = board[from.row][rookCol];
-
-    if (!rook || rook.type !== 'R' || rook.hasMoved) return false;
-
-    const pathStart = isShortCastle ? from.col + 1 : to.col + 1;
-    const pathEnd = isShortCastle ? to.col : from.col;
-    for (let c = pathStart; c < pathEnd; c++) {
-      if (board[from.row][c]) return false; // Path is not clear
-    }
-
-    // Check if squares king passes through are under attack
-    const opponentColor = turn === 'w' ? 'b' : 'w';
-    for (let c = from.col; c !== to.col + (isShortCastle ? 1 : -1); c += (isShortCastle ? 1 : -1)) {
-        if (isSquareUnderAttack(board, from.row, c, opponentColor)) return false;
-    }
-
-    return true;
+  // 1. Check if the move is legal from a piece movement perspective (pseudo-legal)
+  if (!isPseudoMoveValid(board, from, to)) {
+    return false;
   }
+  
+  // Special validation for castling, as it involves squares being under attack.
+  if (piece.type === 'K' && Math.abs(to.col - from.col) === 2) {
+      const kingColor = piece.color;
+      const opponentColor = kingColor === 'w' ? 'b' : 'w';
 
-  switch (piece.type) {
-    case 'P': // Pawn
-      const forward = turn === 'w' ? -1 : 1;
-      const startRow = turn === 'w' ? 6 : 1;
-      // Move forward
-      if (dCol === 0 && !targetPiece) {
-        if (dRow === forward) return true;
-        if (dRow === 2 * forward && from.row === startRow && !board[from.row + forward][from.col]) return true;
+      // King cannot castle out of check
+      if (isSquareUnderAttack(board, from.row, from.col, opponentColor)) {
+          return false;
       }
-      // Capture
-      if (Math.abs(dCol) === 1 && dRow === forward && targetPiece) return true;
-      return false;
-    case 'N': // Knight
-      return (Math.abs(dRow) === 2 && Math.abs(dCol) === 1) || (Math.abs(dRow) === 1 && Math.abs(dCol) === 2);
-    case 'B': // Bishop
-      if (Math.abs(dRow) !== Math.abs(dCol)) return false;
-      return isPathClear(board, from, to);
-    case 'R': // Rook
-      if (dRow !== 0 && dCol !== 0) return false;
-      return isPathClear(board, from, to);
-    case 'Q': // Queen
-      if ((dRow !== 0 && dCol !== 0) && (Math.abs(dRow) !== Math.abs(dCol))) return false;
-      return isPathClear(board, from, to);
-    case 'K': // King
-      return Math.abs(dRow) <= 1 && Math.abs(dCol) <= 1;
-    default:
-      return false;
+
+      // The squares the king passes through cannot be under attack
+      const isShortCastle = to.col > from.col;
+      const passCol = from.col + (isShortCastle ? 1 : -1);
+      if (isSquareUnderAttack(board, from.row, passCol, opponentColor) || isSquareUnderAttack(board, from.row, to.col, opponentColor)) {
+          return false;
+      }
   }
+
+
+  // 2. Simulate the move on a temporary board
+  const newBoard = board.map(row => row.map(p => p ? {...p} : null));
+  newBoard[to.row][to.col] = newBoard[from.row][from.col];
+  newBoard[from.row][from.col] = null;
+
+  // 3. Find the king of the player who made the move
+  const kingPos = findKing(newBoard, piece.color);
+  if (!kingPos) {
+    // This should not happen in a real game, but as a safeguard:
+    // If there's no king, the move is technically "valid" as it can't result in check.
+    return true; 
+  }
+
+  // 4. Check if the king is under attack after the move
+  const opponentColor = piece.color === 'w' ? 'b' : 'w';
+  return !isSquareUnderAttack(newBoard, kingPos.row, kingPos.col, opponentColor);
 }
 
 function isPathClear(board: Board, from: { row: number; col: number }, to: { row: number; col: number }): boolean {
