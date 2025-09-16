@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Crown, User, Settings, Menu } from "lucide-react";
+import { Crown, Settings, Menu } from "lucide-react";
 import Chessboard from "./Chessboard";
 import MoveHistory from "./MoveHistory";
 import { Button } from "@/components/ui/button";
@@ -221,7 +221,7 @@ export default function GameClient() {
   }, [turn, board, fullMoveNumber, toast]);
 
   return (
-    <div className="bg-background h-screen flex flex-col dark">
+    <div className="bg-background flex flex-col dark h-screen">
       <header className="flex items-center justify-between p-2 border-b bg-card flex-shrink-0">
         <div className="flex items-center gap-2">
           <Crown className="text-accent h-6 w-6" />
@@ -244,14 +244,11 @@ export default function GameClient() {
                 </SheetContent>
             </Sheet>
           <Button variant="ghost" size="icon" className="hidden md:inline-flex">
-            <User />
-          </Button>
-          <Button variant="ghost" size="icon" className="hidden md:inline-flex">
             <Settings />
           </Button>
         </div>
       </header>
-      <main className="flex-grow p-2 md:p-4 overflow-hidden">
+      <main className="flex-grow p-2 md:p-4 overflow-auto">
         <div className="grid grid-cols-1 md:grid-cols-[1fr_minmax(280px,320px)] gap-4 h-full">
           
           <div className="flex flex-col items-center justify-start md:justify-center pt-2 md:pt-0">
