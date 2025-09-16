@@ -47,12 +47,12 @@ export default function Chessboard({ board, turn, onSquareClick, lastMove, inval
     }
   };
 
-  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>, row: number, col: number) => {
-    const piece = board[row][col];
-    if (piece && piece.color === turn) {
-      onSquareClick(row, col); // Show valid moves on touch start
-      setDraggedPiece({ row, col, piece });
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>, row: number, col: number, piece: Piece) => {
+    if (piece.color !== turn) {
+      return;
     }
+    onSquareClick(row, col); // Show valid moves on touch start
+    setDraggedPiece({ row, col, piece });
   };
 
   const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
@@ -113,9 +113,9 @@ export default function Chessboard({ board, turn, onSquareClick, lastMove, inval
                 onDrop={() => handleDrop(rowIndex, colIndex)}
                 onClick={() => onSquareClick(rowIndex, colIndex)}
                 onTouchStart={(e) => {
-                  const piece = board[rowIndex][colIndex];
-                  if (piece && piece.color === turn) {
-                    handleTouchStart(e, rowIndex, colIndex);
+                  const currentPiece = board[rowIndex][colIndex];
+                  if (currentPiece) {
+                    handleTouchStart(e, rowIndex, colIndex, currentPiece);
                   } else {
                     onSquareClick(rowIndex, colIndex);
                   }
