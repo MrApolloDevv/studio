@@ -277,8 +277,6 @@ export default function GameClient() {
           <h1 className="text-xl font-bold text-foreground">Xadrez</h1>
         </div>
         <div className="flex items-center gap-2">
-            <Button variant="destructive" size="sm" onClick={() => setGameOver('Xeque-mate! Stockfish venceu.')}>Desistir</Button>
-            <Button variant="secondary" size="sm" onClick={() => setGameOver('Xeque-mate! Você venceu!')}>Vencer</Button>
             <Sheet>
                 <SheetTrigger asChild>
                     <Button variant="ghost" size="icon" className="md:hidden">
