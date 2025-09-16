@@ -15,12 +15,14 @@ interface PlayerProfileProps {
 
 export default function PlayerProfile({ name, elo, avatarUrl, isTurn }: PlayerProfileProps) {
 
+  const isOpponent = name === 'Stockfish';
+
   return (
     <Card className={cn("transition-all w-full", isTurn && "border-accent shadow-lg")}>
       <CardContent className={cn("flex items-center justify-between gap-3 p-2 md:p-3")}>
         <div className="flex items-center gap-2 md:gap-3">
           <Avatar className={cn("h-8 w-8 md:h-10 md:w-10", "border-2 border-primary/50")}>
-            <AvatarImage src={avatarUrl} alt={name} data-ai-hint="person face" />
+            <AvatarImage src={avatarUrl} alt={name} data-ai-hint={isOpponent ? 'fish robot' : 'person face'} />
             <AvatarFallback>{name.charAt(0).toUpperCase()}</AvatarFallback>
           </Avatar>
           <div className="flex flex-col">
@@ -38,3 +40,5 @@ export default function PlayerProfile({ name, elo, avatarUrl, isTurn }: PlayerPr
     </Card>
   );
 }
+
+    
