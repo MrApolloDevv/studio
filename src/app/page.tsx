@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -97,7 +98,7 @@ export default function HomePage() {
 
           <div className="relative container mx-auto px-4">
             <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-foreground">
-              Arena de Xadrez
+              Xadrez
             </h1>
             <p className="mt-4 text-lg md:text-xl max-w-2xl mx-auto text-muted-foreground">
               Sua plataforma de xadrez online para partidas desafiadoras contra a IA Stockfish.
