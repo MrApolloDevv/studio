@@ -30,7 +30,7 @@ type Move = {
 };
 
 const playSound = (sound: 'move' | 'check') => {
-  const audio = new Audio(sound === 'move' ? '/sounds/move-self.mp3' : '/sounds/check.mp3');
+  const audio = new Audio(sound === 'move' ? '/sounds/move-sound.mp3' : '/sounds/check-sound.mp3');
   audio.play().catch(error => console.error("Erro ao tocar o som:", error));
 };
 
@@ -284,5 +284,7 @@ export default function GameClient() {
 }
 
   
+
+    
 
     
