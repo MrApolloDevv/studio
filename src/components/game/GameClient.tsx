@@ -18,7 +18,7 @@ import {
   type PlayerColor,
   type Piece,
 } from "@/lib/chess-logic";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import PlayerProfile from "./PlayerProfile";
 
 type Move = {
@@ -256,6 +256,9 @@ export default function GameClient() {
                     </Button>
                 </SheetTrigger>
                 <SheetContent>
+                    <SheetHeader>
+                        <SheetTitle>Opções do Jogo</SheetTitle>
+                    </SheetHeader>
                     <div className="flex flex-col gap-4 pt-8 h-full">
                         <PlayerProfile name="Oponente" elo={1500} avatarUrl="https://picsum.photos/seed/2/100/100" isTurn={turn === 'b'} />
                         <PlayerProfile name="Você" elo={1400} avatarUrl="https://picsum.photos/seed/1/100/100" isTurn={turn === 'w'} />
