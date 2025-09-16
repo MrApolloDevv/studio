@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { type Piece, type Board, type PlayerColor } from "@/lib/chess-logic";
 import { getPieceComponent } from "@/components/icons/ChessPieces";
 import { cn } from "@/lib/utils";
@@ -41,8 +41,7 @@ export default function Chessboard({ board, turn, onSquareClick, lastMove, inval
 
   const handleDrop = (row: number, col: number) => {
     if (draggedPiece) {
-      onSquareClick(draggedPiece.row, draggedPiece.col); // Select the piece
-      onSquareClick(row, col); // Attempt to move
+      onSquareClick(row, col);
       setDraggedPiece(null);
     }
   };
@@ -66,11 +65,11 @@ export default function Chessboard({ board, turn, onSquareClick, lastMove, inval
               <div
                 key={`${rowIndex}-${colIndex}`}
                 className={cn(
-                  "relative flex items-center justify-center aspect-square",
+                  "relative flex items-center justify-center aspect-square transition-colors duration-300",
                   isLight ? "bg-stone-300" : "bg-emerald-800",
-                  (isLastMoveFrom || isLastMoveTo) && "bg-accent/70",
+                  (isLastMoveFrom || isLastMoveTo) && "bg-yellow-400/80",
                   isSelected && "bg-accent/90",
-                  isInvalidMove && "ring-2 ring-inset ring-destructive"
+                  isInvalidMove && "bg-destructive/70"
                 )}
                 onDragOver={handleDragOver}
                 onDrop={() => handleDrop(rowIndex, colIndex)}
@@ -80,22 +79,22 @@ export default function Chessboard({ board, turn, onSquareClick, lastMove, inval
                   <div
                     draggable
                     onDragStart={(e) => handleDragStart(e, rowIndex, colIndex, piece)}
-                    className="cursor-grab active:cursor-grabbing w-full h-full flex items-center justify-center transition-transform duration-100 ease-in-out"
-                    style={{ transform: (draggedPiece?.row === rowIndex && draggedPiece?.col === colIndex) ? 'scale(1.2)' : 'scale(1)'}}
+                    className="cursor-grab active:cursor-grabbing w-full h-full flex items-center justify-center transition-transform duration-200 ease-in-out"
+                    style={{ transform: (draggedPiece?.row === rowIndex && draggedPiece?.col === colIndex) ? 'scale(1.2) rotate(5deg)' : 'scale(1)'}}
                   >
                     {getPieceComponent(piece.type, piece.color)}
                   </div>
                 )}
                 {isValidMove && (
-                  <div className="absolute w-full h-full flex items-center justify-center pointer-events-none">
+                   <div className="absolute w-full h-full flex items-center justify-center pointer-events-none animate-in fade-in-0 zoom-in-50 duration-300">
                     <div className="w-1/3 h-1/3 rounded-full bg-black/20"></div>
                   </div>
                 )}
                 {colIndex === 0 && (
-                  <span className={cn("absolute left-1 top-0 text-xs font-bold", isLight ? "text-black" : "text-stone-300")}>{ranks[rowIndex]}</span>
+                  <span className={cn("absolute left-1 top-0 text-xs font-bold transition-colors duration-300", isLight ? "text-emerald-800" : "text-stone-300")}>{ranks[rowIndex]}</span>
                 )}
                 {rowIndex === 7 && (
-                  <span className={cn("absolute right-1 bottom-0 text-xs font-bold", isLight ? "text-black" : "text-stone-300")}>{files[colIndex]}</span>
+                  <span className={cn("absolute right-1 bottom-0 text-xs font-bold transition-colors duration-300", isLight ? "text-emerald-800" : "text-stone-300")}>{files[colIndex]}</span>
                 )}
               </div>
             );

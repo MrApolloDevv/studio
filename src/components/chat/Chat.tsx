@@ -43,7 +43,7 @@ export default function Chat() {
             {messages.map((msg, index) => (
               <div
                 key={index}
-                className={`flex items-start gap-2 ${
+                className={`flex items-start gap-2 animate-in fade-in-0 slide-in-from-bottom-2 duration-300 ${
                   msg.sender === "Você" ? "justify-end" : ""
                 }`}
               >
@@ -53,7 +53,7 @@ export default function Chat() {
                   </Avatar>
                 )}
                 <div
-                  className={`rounded-lg px-3 py-2 text-sm max-w-xs ${
+                  className={`rounded-lg px-3 py-2 text-sm max-w-xs transition-all duration-300 ${
                     msg.sender === "Você"
                       ? "bg-primary text-primary-foreground"
                       : "bg-muted"
