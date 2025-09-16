@@ -220,7 +220,7 @@ export default function GameClient() {
   }, [turn, board, fullMoveNumber, toast]);
 
   return (
-    <div className="bg-background min-h-screen flex flex-col dark">
+    <div className="bg-background h-screen overflow-hidden flex flex-col dark">
       <header className="flex items-center justify-between p-2 border-b bg-card flex-shrink-0">
         <div className="flex items-center gap-2">
           <Crown className="text-accent h-6 w-6" />
