@@ -235,6 +235,8 @@ export default function GameClient() {
                 </SheetTrigger>
                 <SheetContent>
                     <div className="flex flex-col gap-4 pt-8 h-full">
+                        <PlayerProfile name="Oponente" elo={1500} avatarUrl="https://picsum.photos/seed/2/100/100" isTurn={turn === 'b'} />
+                        <PlayerProfile name="Você" elo={1400} avatarUrl="https://picsum.photos/seed/1/100/100" isTurn={turn === 'w'} />
                         <MoveHistory moves={moveHistory} />
                     </div>
                 </SheetContent>
@@ -250,8 +252,7 @@ export default function GameClient() {
       <main className="flex-grow p-2 md:p-4 overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-[1fr_minmax(280px,320px)] gap-4 h-full">
           
-          <div className="flex flex-col items-center justify-center gap-2 min-h-0">
-              <PlayerProfile name="Oponente" elo={1500} avatarUrl="https://picsum.photos/seed/2/100/100" isTurn={turn === 'b'} size="small" />
+          <div className="flex flex-col items-center justify-center min-h-0">
               <div className="w-full flex-grow flex items-center justify-center min-h-0">
                 <Chessboard 
                   board={board} 
@@ -263,10 +264,13 @@ export default function GameClient() {
                   selectedSquare={selectedSquare}
                 />
               </div>
-              <PlayerProfile name="Você" elo={1400} avatarUrl="https://picsum.photos/seed/1/100/100" isTurn={turn === 'w'} size="small" />
           </div>
           
           <div className="hidden md:flex flex-col gap-4 h-full">
+            <div className="flex flex-col gap-4">
+              <PlayerProfile name="Oponente" elo={1500} avatarUrl="https://picsum.photos/seed/2/100/100" isTurn={turn === 'b'} />
+              <PlayerProfile name="Você" elo={1400} avatarUrl="https://picsum.photos/seed/1/100/100" isTurn={turn === 'w'} />
+            </div>
             <MoveHistory moves={moveHistory} />
           </div>
 
@@ -275,5 +279,3 @@ export default function GameClient() {
     </div>
   );
 }
-
-    

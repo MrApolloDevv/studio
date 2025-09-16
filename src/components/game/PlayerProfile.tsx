@@ -13,22 +13,20 @@ interface PlayerProfileProps {
   elo: number;
   avatarUrl: string;
   isTurn: boolean;
-  size?: 'default' | 'small';
 }
 
-export default function PlayerProfile({ name, elo, avatarUrl, isTurn, size = 'default' }: PlayerProfileProps) {
-  const isSmall = size === 'small';
+export default function PlayerProfile({ name, elo, avatarUrl, isTurn }: PlayerProfileProps) {
 
   return (
-    <Card className={cn("transition-all w-full max-w-sm", isTurn && "border-accent shadow-lg")}>
-      <CardContent className={cn("flex items-center justify-between gap-3", isSmall ? "p-2" : "p-3")}>
+    <Card className={cn("transition-all w-full", isTurn && "border-accent shadow-lg")}>
+      <CardContent className={cn("flex items-center justify-between gap-3 p-3")}>
         <div className="flex items-center gap-3">
-          <Avatar className={cn(isSmall ? "h-8 w-8" : "h-10 w-10", "border-2 border-primary/50")}>
+          <Avatar className={cn("h-10 w-10", "border-2 border-primary/50")}>
             <AvatarImage src={avatarUrl} alt={name} data-ai-hint="person face" />
             <AvatarFallback>{name.charAt(0).toUpperCase()}</AvatarFallback>
           </Avatar>
           <div className="flex flex-col">
-            <h3 className={cn("font-semibold", isSmall ? "text-sm" : "text-base")}>{name}</h3>
+            <h3 className={cn("font-semibold", "text-base")}>{name}</h3>
             <span className="text-xs text-muted-foreground">Elo: {elo}</span>
           </div>
         </div>
