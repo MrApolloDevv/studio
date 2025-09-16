@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
-  title: 'Arena de Xadrez',
+  title: 'Xadrez',
   description: 'Uma plataforma de xadrez online para partidas desafiadoras contra a IA Stockfish.',
 };
 

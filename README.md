@@ -1,8 +1,8 @@
-# Arena de Xadrez - Análise do Projeto
+# Xadrez - Análise do Projeto
 
 ## 1. Visão Geral
 
-O **Arena de Xadrez** é uma aplicação web moderna que permite aos usuários jogar partidas de xadrez contra uma inteligência artificial avançada, o Stockfish. O projeto foi desenvolvido com foco em performance, responsividade e uma experiência de usuário fluida e agradável, utilizando tecnologias de ponta.
+O **Xadrez** é uma aplicação web moderna que permite aos usuários jogar partidas de xadrez contra uma inteligência artificial avançada, o Stockfish. O projeto foi desenvolvido com foco em performance, responsividade e uma experiência de usuário fluida e agradável, utilizando tecnologias de ponta.
 
 A aplicação consiste em uma página inicial (landing page) que apresenta o projeto e uma página de jogo onde a partida acontece.
 
