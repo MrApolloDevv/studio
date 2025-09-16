@@ -271,7 +271,7 @@ export default function GameClient() {
   return (
     <div className="bg-background flex flex-col dark h-screen">
       <GameOverDialog isOpen={!!gameOver} message={gameOver || ''} onNewGame={handleNewGame} />
-      <header className="flex items-center justify-between p-2 border-b bg-card flex-shrink-0">
+      <header className="flex items-center justify-between p-2 border-b bg-card flex-shrink-0 shadow-md">
         <div className="flex items-center gap-2">
           <Crown className="text-accent h-6 w-6" />
           <h1 className="text-xl font-bold text-foreground">Xadrez</h1>
@@ -333,5 +333,7 @@ export default function GameClient() {
     </div>
   );
 }
+
+    
 
     
