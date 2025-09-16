@@ -14,14 +14,14 @@ interface ChessboardProps {
   board: Board;
   turn: PlayerColor;
   lastMove: Move | null;
-  onMove: (from: { row: number; col: number }, to: { row: number; col: number }) => void;
+  onSquareClick: (row: number, col: number) => void;
   invalidMoveFrom: { row: number; col: number } | null;
   validMoves: { row: number; col: number }[];
+  selectedSquare: { row: number; col: number } | null;
 }
 
-export default function Chessboard({ board, turn, onMove, lastMove, invalidMoveFrom, validMoves }: ChessboardProps) {
+export default function Chessboard({ board, turn, onSquareClick, lastMove, invalidMoveFrom, validMoves, selectedSquare }: ChessboardProps) {
   const [draggedPiece, setDraggedPiece] = useState<{ row: number; col: number; piece: Piece } | null>(null);
-  const [selectedSquare, setSelectedSquare] = useState<{ row: number; col: number } | null>(null);
   
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>, row: number, col: number, piece: Piece) => {
     if (piece.color !== turn) {
@@ -41,23 +41,11 @@ export default function Chessboard({ board, turn, onMove, lastMove, invalidMoveF
 
   const handleDrop = (row: number, col: number) => {
     if (draggedPiece) {
-      onMove({ row: draggedPiece.row, col: draggedPiece.col }, { row, col });
+      onSquareClick(draggedPiece.row, draggedPiece.col); // Select the piece
+      onSquareClick(row, col); // Attempt to move
       setDraggedPiece(null);
-      setSelectedSquare(null);
     }
   };
-
-  const handleClick = (row: number, col: number) => {
-    const piece = board[row][col];
-    if (selectedSquare) {
-       onMove(selectedSquare, { row, col });
-       setSelectedSquare(null);
-    } else if (piece && piece.color === turn) {
-      setSelectedSquare({ row, col });
-    } else {
-      setSelectedSquare(null);
-    }
-  }
 
   const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
   const ranks = ['8', '7', '6', '5', '4', '3', '2', '1'];
@@ -86,7 +74,7 @@ export default function Chessboard({ board, turn, onMove, lastMove, invalidMoveF
                 )}
                 onDragOver={handleDragOver}
                 onDrop={() => handleDrop(rowIndex, colIndex)}
-                onClick={() => handleClick(rowIndex, colIndex)}
+                onClick={() => onSquareClick(rowIndex, colIndex)}
               >
                 {piece && (
                   <div

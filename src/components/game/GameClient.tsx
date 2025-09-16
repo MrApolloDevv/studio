@@ -34,72 +34,77 @@ export default function GameClient() {
   const [invalidMoveFrom, setInvalidMoveFrom] = useState<{ row: number; col: number } | null>(null);
   const [fullMoveNumber, setFullMoveNumber] = useState(1);
   const [validMoves, setValidMoves] = useState<{ row: number; col: number }[]>([]);
+  const [selectedSquare, setSelectedSquare] = useState<{ row: number; col: number } | null>(null);
   const { toast } = useToast();
 
-  const handleMove = (from: { row: number; col: number }, to: { row: number; col: number }) => {
-    const piece = board[from.row][from.col];
-    
-    // If a piece is selected, calculate its valid moves
-    if (piece && piece.color === turn) {
-      setValidMoves(getValidMoves(board, from));
-    } else {
-      setValidMoves([]);
-    }
-    
-    if (turn !== 'w' || !piece || piece.color !== 'w' || !isMoveValid(board, from, to)) {
-      setInvalidMoveFrom(from);
-      setTimeout(() => setInvalidMoveFrom(null), 300);
-      setValidMoves([]);
-      return;
-    }
+  const handleSquareClick = (row: number, col: number) => {
+    if (turn !== 'w') return;
 
-    const newBoard = board.map(row => row.map(p => p ? {...p} : null));
-    const movedPiece: Piece = { ...piece, hasMoved: true };
-    
-    // Handle castling
-    if (piece.type === 'K' && Math.abs(to.col - from.col) === 2) {
-      const isShortCastle = to.col > from.col;
-      const rookCol = isShortCastle ? 7 : 0;
-      const rookTargetCol = isShortCastle ? 5 : 3;
-      const rook = newBoard[from.row][rookCol];
+    if (selectedSquare) {
+      // If a piece is selected, try to move it
+      const from = selectedSquare;
+      const to = { row, col };
+      const piece = board[from.row][from.col];
 
-      newBoard[from.row][to.col] = movedPiece;
-      newBoard[from.row][from.col] = null;
-      if (rook) {
-        newBoard[from.row][rookTargetCol] = { ...rook, hasMoved: true };
-        newBoard[from.row][rookCol] = null;
+      if (piece && isMoveValid(board, from, to)) {
+        const newBoard = board.map(row => row.map(p => p ? {...p} : null));
+        const movedPiece: Piece = { ...piece, hasMoved: true };
+        
+        // Handle castling
+        if (piece.type === 'K' && Math.abs(to.col - from.col) === 2) {
+          const isShortCastle = to.col > from.col;
+          const rookCol = isShortCastle ? 7 : 0;
+          const rookTargetCol = isShortCastle ? 5 : 3;
+          const rook = newBoard[from.row][rookCol];
+
+          newBoard[from.row][to.col] = movedPiece;
+          newBoard[from.row][from.col] = null;
+          if (rook) {
+            newBoard[from.row][rookTargetCol] = { ...rook, hasMoved: true };
+            newBoard[from.row][rookCol] = null;
+          }
+        } else {
+          newBoard[to.row][to.col] = movedPiece;
+          newBoard[from.row][from.col] = null;
+        }
+
+        const moveNotation = coordsToAlgebraic(to.row, to.col);
+        
+        setBoard(newBoard);
+        setLastMove({from, to});
+        setMoveHistory(prev => [...prev, moveNotation]);
+        setSelectedSquare(null);
+        setValidMoves([]);
+        
+        const nextTurn = turn === "w" ? "b" : "w";
+        setTurn(nextTurn);
+
+        if (nextTurn === 'w') {
+          setFullMoveNumber(prev => prev + 1);
+        }
+      } else {
+        // Invalid move or clicking another piece
+        setSelectedSquare(null);
+        setValidMoves([]);
+        const newClickedPiece = board[row][col];
+        if (newClickedPiece && newClickedPiece.color === 'w') {
+          setSelectedSquare({row, col});
+          setValidMoves(getValidMoves(board, {row, col}));
+        } else {
+           setInvalidMoveFrom(from);
+           setTimeout(() => setInvalidMoveFrom(null), 300);
+        }
       }
     } else {
-      newBoard[to.row][to.col] = movedPiece;
-      newBoard[from.row][from.col] = null;
-    }
-
-    const moveNotation = coordsToAlgebraic(to.row, to.col);
-    
-    setBoard(newBoard);
-    setLastMove({from, to});
-    setMoveHistory(prev => [...prev, moveNotation]);
-    setValidMoves([]);
-    
-    const nextTurn = turn === "w" ? "b" : "w";
-    setTurn(nextTurn);
-
-    if (nextTurn === 'w') {
-      setFullMoveNumber(prev => prev + 1);
+      // If no piece is selected, select one
+      const piece = board[row][col];
+      if (piece && piece.color === 'w') {
+        setSelectedSquare({ row, col });
+        setValidMoves(getValidMoves(board, { row, col }));
+      }
     }
   };
   
-  useEffect(() => {
-    if (turn === 'w') {
-      const selectedSquare = validMoves.length > 0 ? null : null; // This logic needs review
-      if (selectedSquare) {
-          setValidMoves(getValidMoves(board, selectedSquare));
-      } else {
-          setValidMoves([]);
-      }
-    }
-  }, [board, turn]);
-
   useEffect(() => {
     const makeOpponentMove = async () => {
       try {
@@ -218,10 +223,11 @@ export default function GameClient() {
               <Chessboard 
                 board={board} 
                 turn={turn} 
-                onMove={handleMove} 
+                onSquareClick={handleSquareClick}
                 lastMove={lastMove} 
                 invalidMoveFrom={invalidMoveFrom}
                 validMoves={validMoves}
+                selectedSquare={selectedSquare}
               />
           </div>
           
