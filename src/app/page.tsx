@@ -155,7 +155,7 @@ export default function HomePage() {
       <footer className="py-6 bg-card">
         <div className="container mx-auto px-4 flex flex-col sm:flex-row justify-between items-center text-center sm:text-left">
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Arena de Xadrez. Todos os direitos reservados.
+            © 2024 Arena de Xadrez. Todos os direitos reservados.
           </p>
           <div className="flex gap-4 mt-4 sm:mt-0">
             <a href="https://github.com/MrApolloDevv" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
