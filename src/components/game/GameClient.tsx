@@ -224,7 +224,7 @@ export default function GameClient() {
       <header className="flex items-center justify-between p-2 border-b bg-card flex-shrink-0">
         <div className="flex items-center gap-2">
           <Crown className="text-accent h-6 w-6" />
-          <h1 className="text-xl font-bold text-foreground">Arena de Xadrez</h1>
+          <h1 className="text-xl font-bold text-foreground">Xadrez</h1>
         </div>
         <div className="flex items-center gap-2">
             <Sheet>

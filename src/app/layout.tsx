@@ -3,8 +3,8 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
-  title: 'Arena de Xadrez em Tempo Real',
-  description: 'Uma aplicação de xadrez multijogador em tempo real.',
+  title: 'Xadrez',
+  description: 'Uma aplicação de xadrez em tempo real.',
 };
 
 export default function RootLayout({
