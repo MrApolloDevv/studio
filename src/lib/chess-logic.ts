@@ -87,19 +87,17 @@ function isPseudoMoveValid(board: Board, from: { row: number; col: number }, to:
        // Standard king move
       if (Math.abs(dRow) <= 1 && Math.abs(dCol) <= 1) return true;
        // Castling
-      if (dRow === 0 && Math.abs(dCol) === 2) {
-          if (piece.hasMoved) return false;
-
+      if (dRow === 0 && Math.abs(dCol) === 2 && !piece.hasMoved) {
           const isShortCastle = dCol === 2;
           const rookCol = isShortCastle ? 7 : 0;
           const rook = board[from.row][rookCol];
 
           if (!rook || rook.type !== 'R' || rook.hasMoved) return false;
           
-          const pathStart = isShortCastle ? from.col + 1 : to.col;
+          const pathStart = isShortCastle ? from.col + 1 : to.col + 1;
           const pathEnd = isShortCastle ? to.col : from.col;
           for (let c = pathStart; c < pathEnd; c++) {
-              if (board[from.row][c]) return false;
+              if (board[from.row][c]) return false; // Path is not clear
           }
           return true;
       }
@@ -112,44 +110,33 @@ export function isMoveValid(board: Board, from: { row: number; col: number }, to
   const piece = board[from.row][from.col];
   if (!piece) return false;
 
-  // 1. Check if the move is legal from a piece movement perspective (pseudo-legal)
   if (!isPseudoMoveValid(board, from, to)) {
     return false;
   }
   
-  // Special validation for castling, as it involves squares being under attack.
   if (piece.type === 'K' && Math.abs(to.col - from.col) === 2) {
       const kingColor = piece.color;
       const opponentColor = kingColor === 'w' ? 'b' : 'w';
 
-      // King cannot castle out of check
       if (isSquareUnderAttack(board, from.row, from.col, opponentColor)) {
           return false;
       }
 
-      // The squares the king passes through cannot be under attack
-      const isShortCastle = to.col > from.col;
-      const passCol = from.col + (isShortCastle ? 1 : -1);
+      const passCol = from.col + (to.col > from.col ? 1 : -1);
       if (isSquareUnderAttack(board, from.row, passCol, opponentColor) || isSquareUnderAttack(board, from.row, to.col, opponentColor)) {
           return false;
       }
   }
 
-
-  // 2. Simulate the move on a temporary board
   const newBoard = board.map(row => row.map(p => p ? {...p} : null));
   newBoard[to.row][to.col] = newBoard[from.row][from.col];
   newBoard[from.row][from.col] = null;
 
-  // 3. Find the king of the player who made the move
   const kingPos = findKing(newBoard, piece.color);
   if (!kingPos) {
-    // This should not happen in a real game, but as a safeguard:
-    // If there's no king, the move is technically "valid" as it can't result in check.
     return true; 
   }
 
-  // 4. Check if the king is under attack after the move
   const opponentColor = piece.color === 'w' ? 'b' : 'w';
   return !isSquareUnderAttack(newBoard, kingPos.row, kingPos.col, opponentColor);
 }
@@ -232,4 +219,21 @@ export function algebraicToCoords(algebraic: string): { row: number; col: number
     if (row === -1 || col === -1) return null;
 
     return { row, col };
+}
+
+export function getValidMoves(board: Board, from: { row: number; col: number }): { row: number, col: number }[] {
+  const validMoves: { row: number, col: number }[] = [];
+  const piece = board[from.row][from.col];
+  if (!piece) {
+    return [];
+  }
+
+  for (let toRow = 0; toRow < 8; toRow++) {
+    for (let toCol = 0; toCol < 8; toCol++) {
+      if (isMoveValid(board, from, { row: toRow, col: toCol })) {
+        validMoves.push({ row: toRow, col: toCol });
+      }
+    }
+  }
+  return validMoves;
 }

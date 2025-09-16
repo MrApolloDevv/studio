@@ -16,9 +16,10 @@ interface ChessboardProps {
   lastMove: Move | null;
   onMove: (from: { row: number; col: number }, to: { row: number; col: number }) => void;
   invalidMoveFrom: { row: number; col: number } | null;
+  validMoves: { row: number; col: number }[];
 }
 
-export default function Chessboard({ board, turn, onMove, lastMove, invalidMoveFrom }: ChessboardProps) {
+export default function Chessboard({ board, turn, onMove, lastMove, invalidMoveFrom, validMoves }: ChessboardProps) {
   const [draggedPiece, setDraggedPiece] = useState<{ row: number; col: number; piece: Piece } | null>(null);
   const [selectedSquare, setSelectedSquare] = useState<{ row: number; col: number } | null>(null);
   
@@ -29,7 +30,6 @@ export default function Chessboard({ board, turn, onMove, lastMove, invalidMoveF
     }
     setDraggedPiece({ row, col, piece });
     e.dataTransfer.effectAllowed = 'move';
-    // Use a transparent image to hide the default drag ghost
     const img = new Image();
     img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
     e.dataTransfer.setDragImage(img, 0, 0);
@@ -47,12 +47,15 @@ export default function Chessboard({ board, turn, onMove, lastMove, invalidMoveF
     }
   };
 
-  const handleClick = (row: number, col: number, piece: Piece | null) => {
+  const handleClick = (row: number, col: number) => {
+    const piece = board[row][col];
     if (selectedSquare) {
        onMove(selectedSquare, { row, col });
        setSelectedSquare(null);
     } else if (piece && piece.color === turn) {
       setSelectedSquare({ row, col });
+    } else {
+      setSelectedSquare(null);
     }
   }
 
@@ -69,6 +72,7 @@ export default function Chessboard({ board, turn, onMove, lastMove, invalidMoveF
             const isLastMoveTo = lastMove?.to.row === rowIndex && lastMove?.to.col === colIndex;
             const isSelected = selectedSquare?.row === rowIndex && selectedSquare?.col === colIndex;
             const isInvalidMove = invalidMoveFrom?.row === rowIndex && invalidMoveFrom?.col === colIndex;
+            const isValidMove = validMoves.some(m => m.row === rowIndex && m.col === colIndex);
 
             return (
               <div
@@ -82,7 +86,7 @@ export default function Chessboard({ board, turn, onMove, lastMove, invalidMoveF
                 )}
                 onDragOver={handleDragOver}
                 onDrop={() => handleDrop(rowIndex, colIndex)}
-                onClick={() => handleClick(rowIndex, colIndex, piece)}
+                onClick={() => handleClick(rowIndex, colIndex)}
               >
                 {piece && (
                   <div
@@ -92,6 +96,11 @@ export default function Chessboard({ board, turn, onMove, lastMove, invalidMoveF
                     style={{ transform: (draggedPiece?.row === rowIndex && draggedPiece?.col === colIndex) ? 'scale(1.2)' : 'scale(1)'}}
                   >
                     {getPieceComponent(piece.type, piece.color)}
+                  </div>
+                )}
+                {isValidMove && (
+                  <div className="absolute w-full h-full flex items-center justify-center pointer-events-none">
+                    <div className="w-1/3 h-1/3 rounded-full bg-black/20"></div>
                   </div>
                 )}
                 {colIndex === 0 && (
