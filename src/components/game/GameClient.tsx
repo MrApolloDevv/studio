@@ -20,7 +20,6 @@ import {
 } from "@/lib/chess-logic";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import PlayerProfile from "./PlayerProfile";
-import Chat from "../chat/Chat";
 
 type Move = {
   from: { row: number; col: number };
@@ -261,7 +260,6 @@ export default function GameClient() {
                         <PlayerProfile name="Oponente" elo={1500} avatarUrl="https://picsum.photos/seed/2/100/100" isTurn={turn === 'b'} />
                         <PlayerProfile name="Você" elo={1400} avatarUrl="https://picsum.photos/seed/1/100/100" isTurn={turn === 'w'} />
                         <MoveHistory moves={moveHistory} />
-                        <Chat />
                     </div>
                 </SheetContent>
             </Sheet>
@@ -297,7 +295,6 @@ export default function GameClient() {
               <PlayerProfile name="Você" elo={1400} avatarUrl="https://picsum.photos/seed/1/100/100" isTurn={turn === 'w'} />
             </div>
             <MoveHistory moves={moveHistory} />
-            <Chat />
           </div>
 
         </div>
