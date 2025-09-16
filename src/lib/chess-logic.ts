@@ -255,3 +255,42 @@ export function getValidMoves(board: Board, from: { row: number; col: number }):
   }
   return validMoves;
 }
+
+function hasAnyValidMoves(board: Board, color: PlayerColor): boolean {
+  for (let r = 0; r < 8; r++) {
+    for (let c = 0; c < 8; c++) {
+      const piece = board[r][c];
+      if (piece && piece.color === color) {
+        const moves = getValidMoves(board, { row: r, col: c });
+        if (moves.length > 0) {
+          return true;
+        }
+      }
+    }
+  }
+  return false;
+}
+
+export function isCheckmate(board: Board, color: PlayerColor): boolean {
+  const kingPos = findKing(board, color);
+  if (!kingPos) return false; 
+
+  const opponentColor = color === 'w' ? 'b' : 'w';
+  if (!isSquareUnderAttack(board, kingPos.row, kingPos.col, opponentColor)) {
+    return false; // Not in check, so not checkmate
+  }
+
+  return !hasAnyValidMoves(board, color);
+}
+
+export function isStalemate(board: Board, color: PlayerColor): boolean {
+  const kingPos = findKing(board, color);
+  if (!kingPos) return false;
+
+  const opponentColor = color === 'w' ? 'b' : 'w';
+  if (isSquareUnderAttack(board, kingPos.row, kingPos.col, opponentColor)) {
+    return false; // In check, so not stalemate
+  }
+
+  return !hasAnyValidMoves(board, color);
+}

@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from "react";
 import { Crown, Settings, Menu } from "lucide-react";
 import Chessboard from "./Chessboard";
 import MoveHistory from "./MoveHistory";
+import GameOverDialog from "./GameOverDialog";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -14,6 +15,8 @@ import {
   coordsToAlgebraic,
   isMoveValid,
   getValidMoves,
+  isCheckmate,
+  isStalemate,
   type Board,
   type PlayerColor,
   type Piece,
@@ -35,6 +38,7 @@ export default function GameClient() {
   const [fullMoveNumber, setFullMoveNumber] = useState(1);
   const [validMoves, setValidMoves] = useState<{ row: number; col: number }[]>([]);
   const [selectedSquare, setSelectedSquare] = useState<{ row: number; col: number } | null>(null);
+  const [gameOver, setGameOver] = useState<string | null>(null);
   const { toast } = useToast();
 
   const moveAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -62,8 +66,27 @@ export default function GameClient() {
     }
   };
 
+  const handleNewGame = () => {
+    setBoard(initialBoard);
+    setTurn('w');
+    setMoveHistory([]);
+    setLastMove(null);
+    setFullMoveNumber(1);
+    setSelectedSquare(null);
+    setValidMoves([]);
+    setGameOver(null);
+  };
+
+  const checkGameOver = (currentBoard: Board, nextTurn: PlayerColor) => {
+    if (isCheckmate(currentBoard, nextTurn)) {
+      setGameOver(nextTurn === 'w' ? 'Xeque-mate! Stockfish venceu.' : 'Xeque-mate! Você venceu!');
+    } else if (isStalemate(currentBoard, nextTurn)) {
+      setGameOver('Empate por Afogamento!');
+    }
+  };
+
   const handleSquareClick = (row: number, col: number, fromSquare?: { row: number; col: number }) => {
-    if (turn !== 'w') return;
+    if (turn !== 'w' || gameOver) return;
     
     initializeAudio();
 
@@ -112,6 +135,8 @@ export default function GameClient() {
         const nextTurn = turn === "w" ? "b" : "w";
         setTurn(nextTurn);
 
+        checkGameOver(newBoard, nextTurn);
+
         if (nextTurn === 'w') {
           setFullMoveNumber(prev => prev + 1);
         }
@@ -139,110 +164,113 @@ export default function GameClient() {
   };
   
   useEffect(() => {
-    const makeOpponentMove = async () => {
-      try {
-        const fenString = boardToFEN(board, turn, fullMoveNumber);
-        const response = await fetch('/api/bestmove', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ fen: fenString }),
-        });
+    if (turn === 'b' && !gameOver) {
+      const makeOpponentMove = async () => {
+        try {
+          const fenString = boardToFEN(board, turn, fullMoveNumber);
+          const response = await fetch('/api/bestmove', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ fen: fenString }),
+          });
 
-        if (!response.ok) {
-            throw new Error(`Erro na API: ${response.statusText}`);
-        }
+          if (!response.ok) {
+              throw new Error(`Erro na API: ${response.statusText}`);
+          }
 
-        const result = await response.json();
+          const result = await response.json();
 
-        if (result && result.bestMove && result.bestMove.length >= 4 && result.bestMove !== 'info') {
-          const fromAlg = result.bestMove.substring(0, 2);
-          const toAlg = result.bestMove.substring(2, 4);
-          const from = algebraicToCoords(fromAlg);
-          const to = algebraicToCoords(toAlg);
-          
-          if (from && to) {
-              const piece = board[from.row][from.col];
-              const moveValidation = isMoveValid(board, from, to);
+          if (result && result.bestMove && result.bestMove.length >= 4 && result.bestMove !== 'info') {
+            const fromAlg = result.bestMove.substring(0, 2);
+            const toAlg = result.bestMove.substring(2, 4);
+            const from = algebraicToCoords(fromAlg);
+            const to = algebraicToCoords(toAlg);
+            
+            if (from && to) {
+                const piece = board[from.row][from.col];
+                const moveValidation = isMoveValid(board, from, to);
 
-              if (piece && piece.color === turn && moveValidation.valid) {
-                const newBoard = board.map(row => row.map(p => p ? {...p} : null));
-                const movedPiece: Piece = { ...piece, hasMoved: true };
+                if (piece && piece.color === turn && moveValidation.valid) {
+                  const newBoard = board.map(row => row.map(p => p ? {...p} : null));
+                  const movedPiece: Piece = { ...piece, hasMoved: true };
 
-                if (piece.type === 'K' && Math.abs(to.col - from.col) === 2) {
-                    const isShortCastle = to.col > from.col;
-                    const rookCol = isShortCastle ? 7 : 0;
-                    const rookTargetCol = isShortCastle ? 5 : 3;
-                    const rook = newBoard[from.row][rookCol];
+                  if (piece.type === 'K' && Math.abs(to.col - from.col) === 2) {
+                      const isShortCastle = to.col > from.col;
+                      const rookCol = isShortCastle ? 7 : 0;
+                      const rookTargetCol = isShortCastle ? 5 : 3;
+                      const rook = newBoard[from.row][rookCol];
 
-                    newBoard[from.row][to.col] = movedPiece;
-                    newBoard[from.row][from.col] = null;
-                    if (rook) {
-                        newBoard[from.row][rookTargetCol] = { ...rook, hasMoved: true };
-                        newBoard[from.row][rookCol] = null;
-                    }
+                      newBoard[from.row][to.col] = movedPiece;
+                      newBoard[from.row][from.col] = null;
+                      if (rook) {
+                          newBoard[from.row][rookTargetCol] = { ...rook, hasMoved: true };
+                          newBoard[from.row][rookCol] = null;
+                      }
+                  } else {
+                      newBoard[to.row][to.col] = movedPiece;
+                      newBoard[from.row][from.col] = null;
+                  }
+
+                  const moveNotation = coordsToAlgebraic(to.row, to.col);
+                  
+                  setBoard(newBoard);
+                  setLastMove({from, to});
+                  setMoveHistory(prev => [...prev, moveNotation]);
+                  
+                  if (moveValidation.isCheck) {
+                    playSound('check');
+                  } else {
+                    playSound('move');
+                  }
+                  
+                  const nextTurn = turn === "w" ? "b" : "w";
+                  setTurn(nextTurn);
+                  
+                  checkGameOver(newBoard, nextTurn);
+
+                  if (nextTurn === 'w') {
+                    setFullMoveNumber(prev => prev + 1);
+                  }
                 } else {
-                    newBoard[to.row][to.col] = movedPiece;
-                    newBoard[from.row][from.col] = null;
-                }
-
-                const moveNotation = coordsToAlgebraic(to.row, to.col);
-                
-                setBoard(newBoard);
-                setLastMove({from, to});
-                setMoveHistory(prev => [...prev, moveNotation]);
-                
-                if (moveValidation.isCheck) {
-                  playSound('check');
-                } else {
-                  playSound('move');
-                }
-                
-                const nextTurn = turn === "w" ? "b" : "w";
-                setTurn(nextTurn);
-
-                if (nextTurn === 'w') {
-                  setFullMoveNumber(prev => prev + 1);
-                }
-              } else {
-                  console.error("Jogada da IA inválida (peça errada), tentando novamente:", result.bestMove);
-                  makeOpponentMove();
-                }
+                    console.error("Jogada da IA inválida (peça errada), tentando novamente:", result.bestMove);
+                    makeOpponentMove();
+                  }
+            } else {
+                console.error("Jogada da IA inválida recebida, tentando novamente:", result.bestMove);
+                makeOpponentMove();
+              }
           } else {
-              console.error("Jogada da IA inválida recebida, tentando novamente:", result.bestMove);
-              makeOpponentMove();
-            }
-        } else {
-            console.error("Jogada da IA inválida recebida:", result.bestMove);
-            toast({
-              variant: "destructive",
-              title: "Erro da IA do Oponente",
-              description: "A IA retornou uma jogada inválida. Por favor, tente novamente.",
-            });
-            setTurn('w'); 
+              console.error("Jogada da IA inválida recebida:", result.bestMove);
+              toast({
+                variant: "destructive",
+                title: "Erro da IA do Oponente",
+                description: "A IA retornou uma jogada inválida. Por favor, tente novamente.",
+              });
+              setTurn('w'); 
+          }
+        } catch (error) {
+          console.error("Erro ao obter a jogada do oponente:", error);
+          toast({
+            variant: "destructive",
+            title: "Erro da IA do Oponente",
+            description: "Não foi possível obter a jogada do oponente. Por favor, tente novamente.",
+          });
+          setTurn('w');
         }
-      } catch (error) {
-        console.error("Erro ao obter a jogada do oponente:", error);
-        toast({
-          variant: "destructive",
-          title: "Erro da IA do Oponente",
-          description: "Não foi possível obter a jogada do oponente. Por favor, tente novamente.",
-        });
-        setTurn('w');
-      }
-    };
+      };
 
-    if (turn === 'b') {
       const timer = setTimeout(() => {
         makeOpponentMove();
       }, 1000); 
       return () => clearTimeout(timer);
     }
-  }, [turn, board, fullMoveNumber, toast]);
+  }, [turn, board, fullMoveNumber, toast, gameOver]);
 
   return (
     <div className="bg-background flex flex-col dark h-screen">
+      <GameOverDialog isOpen={!!gameOver} message={gameOver || ''} onNewGame={handleNewGame} />
       <header className="flex items-center justify-between p-2 border-b bg-card flex-shrink-0">
         <div className="flex items-center gap-2">
           <Crown className="text-accent h-6 w-6" />
@@ -305,7 +333,3 @@ export default function GameClient() {
     </div>
   );
 }
-
-    
-
-    
