@@ -101,7 +101,7 @@ export default function HomePage() {
               Xadrez
             </h1>
             <p className="mt-4 text-lg md:text-xl max-w-2xl mx-auto text-muted-foreground">
-              Sua plataforma de xadrez online para partidas desafiadoras contra a IA Stockfish.
+              Plataforma de xadrez para partidas contra a engine Stockfish.
             </p>
             <Link href="/game" passHref>
               <Button size="lg" className="mt-8 bg-accent text-accent-foreground hover:bg-accent/90">
