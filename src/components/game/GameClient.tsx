@@ -2,7 +2,8 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Crown, Settings, Menu } from "lucide-react";
+import { Crown, Home, Menu } from "lucide-react";
+import Link from "next/link";
 import Chessboard from "./Chessboard";
 import MoveHistory from "./MoveHistory";
 import GameOverDialog from "./GameOverDialog";
@@ -294,9 +295,11 @@ export default function GameClient() {
                     </div>
                 </SheetContent>
             </Sheet>
-          <Button variant="ghost" size="icon" className="hidden md:inline-flex">
-            <Settings />
-          </Button>
+            <Link href="/" passHref>
+              <Button variant="ghost" size="icon" className="hidden md:inline-flex">
+                <Home />
+              </Button>
+            </Link>
         </div>
       </header>
       <main className="flex-grow p-2 md:p-4 overflow-auto">
@@ -333,7 +336,3 @@ export default function GameClient() {
     </div>
   );
 }
-
-    
-
-    
