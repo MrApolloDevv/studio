@@ -110,6 +110,8 @@ Para executar o projeto em um ambiente de desenvolvimento, siga os passos abaixo
 2.  **Acesse a aplicação:**
     Abra seu navegador e acesse [http://localhost:3000](http://localhost:3000).
 
+3. **Opção breve:**
+   Abra seu navegador e acesse: https://studio--studio-1417852821-99663.us-central1.hosted.app/
 ---
 
 ## 6. Fluxo de Jogo e Lógica de IA
