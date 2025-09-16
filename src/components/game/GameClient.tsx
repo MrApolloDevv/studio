@@ -220,7 +220,7 @@ export default function GameClient() {
   }, [turn, board, fullMoveNumber, toast]);
 
   return (
-    <div className="bg-background h-screen flex flex-col dark overflow-hidden">
+    <div className="bg-background min-h-screen flex flex-col dark">
       <header className="flex items-center justify-between p-2 border-b bg-card flex-shrink-0">
         <div className="flex items-center gap-2">
           <Crown className="text-accent h-6 w-6" />
@@ -247,11 +247,11 @@ export default function GameClient() {
           </Button>
         </div>
       </header>
-      <main className="flex-grow p-2 md:p-4 overflow-hidden">
+      <main className="flex-grow p-2 md:p-4">
         <div className="grid grid-cols-1 md:grid-cols-[1fr_minmax(280px,320px)] gap-4 h-full">
           
-          <div className="flex flex-col items-center justify-center min-h-0 mt-[-250px] md:mt-0">
-              <div className="w-full flex-grow flex items-center justify-center min-h-0">
+          <div className="flex flex-col items-center justify-start md:justify-center pt-2 md:pt-0">
+              <div className="w-full flex items-center justify-center">
                 <Chessboard 
                   board={board} 
                   turn={turn} 
