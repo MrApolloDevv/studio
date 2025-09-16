@@ -42,9 +42,26 @@ export default function GameClient() {
       return;
     }
 
-    const newBoard = board.map(row => [...row]);
-    newBoard[to.row][to.col] = piece;
-    newBoard[from.row][from.col] = null;
+    const newBoard = board.map(row => row.map(p => p ? {...p} : null));
+    const movedPiece: Piece = { ...piece, hasMoved: true };
+    
+    // Handle castling
+    if (piece.type === 'K' && Math.abs(to.col - from.col) === 2) {
+      const isShortCastle = to.col > from.col;
+      const rookCol = isShortCastle ? 7 : 0;
+      const rookTargetCol = isShortCastle ? 5 : 3;
+      const rook = newBoard[from.row][rookCol];
+
+      newBoard[from.row][to.col] = movedPiece;
+      newBoard[from.row][from.col] = null;
+      if (rook) {
+        newBoard[from.row][rookTargetCol] = { ...rook, hasMoved: true };
+        newBoard[from.row][rookCol] = null;
+      }
+    } else {
+      newBoard[to.row][to.col] = movedPiece;
+      newBoard[from.row][from.col] = null;
+    }
 
     const moveNotation = coordsToAlgebraic(to.row, to.col);
     
@@ -87,9 +104,25 @@ export default function GameClient() {
           if (from && to && isMoveValid(board, from, to)) {
               const piece = board[from.row][from.col];
               if (piece && piece.color === turn) {
-                const newBoard = board.map(row => [...row]);
-                newBoard[to.row][to.col] = piece;
-                newBoard[from.row][from.col] = null;
+                const newBoard = board.map(row => row.map(p => p ? {...p} : null));
+                const movedPiece: Piece = { ...piece, hasMoved: true };
+
+                if (piece.type === 'K' && Math.abs(to.col - from.col) === 2) {
+                    const isShortCastle = to.col > from.col;
+                    const rookCol = isShortCastle ? 7 : 0;
+                    const rookTargetCol = isShortCastle ? 5 : 3;
+                    const rook = newBoard[from.row][rookCol];
+
+                    newBoard[from.row][to.col] = movedPiece;
+                    newBoard[from.row][from.col] = null;
+                    if (rook) {
+                        newBoard[from.row][rookTargetCol] = { ...rook, hasMoved: true };
+                        newBoard[from.row][rookCol] = null;
+                    }
+                } else {
+                    newBoard[to.row][to.col] = movedPiece;
+                    newBoard[from.row][from.col] = null;
+                }
 
                 const moveNotation = coordsToAlgebraic(to.row, to.col);
                 
